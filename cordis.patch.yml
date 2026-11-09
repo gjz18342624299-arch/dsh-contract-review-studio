@@ -1,0 +1,4 @@
+- insert:
+    - id: contract-review-studio
+      name: dsh-contract-review-studio
+      config: {}
