@@ -1,4 +1,4 @@
-export const OWNER = 'cinderzhan/dsh-contract-review-workbench'
+export const OWNER = 'gjz18342624299-arch/dsh-contract-review-studio'
 export class ReviewError extends Error { constructor(message, status = 400, code = 'INVALID_REQUEST') { super(message); this.status = status; this.code = code } }
 const string = (v, max, empty = false) => typeof v === 'string' && v.length <= max && (empty || v.trim().length > 0)
 export function validatePayload(data) {
