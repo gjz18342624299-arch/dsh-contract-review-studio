@@ -20,3 +20,16 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+ONLYOFFICE Docs API SDK
+Copyright (C) Ascensio System SIA, 2009-2026.
+Upstream: https://github.com/ONLYOFFICE/web-apps/blob/f79972a400c3a696490094961772d1f86fac1b82/apps/api/documents/api.js
+Modified 2026-11-10: fixed package source, explicit per-instance document server, window+origin message checks, disabled extension/test/preload routes.
+License: GNU AGPLv3 with upstream additional terms; full text: public/real-files/ONLYOFFICE-LICENSE.txt. Modified source: public/real-files/onlyoffice-api.js. No warranty.
+
+ONLYOFFICE Plugin SDK
+(c) Copyright Ascensio System SIA 2010.
+Upstream: https://github.com/ONLYOFFICE/onlyoffice.github.io/blob/0f0b68cb695c67a1b354af392d1561339e98f8b0/sdkjs-plugins/v1/plugins.js
+Unmodified SDK, GNU AGPLv3 with upstream additional terms; full text: public/real-files/ONLYOFFICE-PLUGINS-LICENSE.txt. Source: public/real-files/onlyoffice-plugins.js. Runs only in the sandboxed local plugin page.
+The workbench MIT license does not replace these SDK licenses. The installed package includes the complete SDK sources and licenses.

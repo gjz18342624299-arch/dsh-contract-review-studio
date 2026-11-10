@@ -1,9 +1,11 @@
+import {readFileSync} from 'node:fs';
+export const pluginSDK=readFileSync(new URL('../public/real-files/onlyoffice-plugins.js',import.meta.url),'utf8');
 export const officePluginGuid='asc.{B2211DCF-C3E4-4EF0-A61D-01D5C3030061}';
 export function pluginConfig(root,channel,parentOrigin,key){
  const query=new URLSearchParams({channel,parentOrigin,key});
  return {name:'合同审查联动',guid:officePluginGuid,baseUrl:root+'/',variations:[{description:'定位原文与应用审查建议',url:'index.html?'+query+'&runtime=1',icons:[],isSystem:true,isVisual:false,isViewer:false,EditorsSupport:['word'],initDataType:'none',initData:'',buttons:[]}]};
 }
-export const pluginPage=editor=>`<!doctype html><meta charset="utf-8"><script src="${editor}/sdkjs-plugins/v1/plugins.js"></script><script>${pluginScript}</script>`;
+export const pluginPage=()=>`<!doctype html><meta charset="utf-8"><script>${pluginSDK}</script><script>${pluginScript}</script>`;
 export const pluginScript=String.raw`
 (function(){
  'use strict';

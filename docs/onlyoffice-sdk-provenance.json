@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-10",
+  "docsSDK": {
+    "repository": "ONLYOFFICE/web-apps",
+    "commit": "f79972a400c3a696490094961772d1f86fac1b82",
+    "path": "apps/api/documents/api.js",
+    "blob": "73982caa8bff63b11cd7bb745d0c0f7d7a107546",
+    "upstreamSha256": "a00eedef4263339904263838f3f1dabcfedb0cb9ff21056da273497a556e5d9b",
+    "bundledPath": "public/real-files/onlyoffice-api.js",
+    "bundledSha256": "b8a6dfe7560aaa8a6ae1b75d857ea6e71d2b7880d684e4c1b2ca69870a65c32d"
+  },
+  "pluginSDK": {
+    "repository": "ONLYOFFICE/onlyoffice.github.io",
+    "commit": "0f0b68cb695c67a1b354af392d1561339e98f8b0",
+    "path": "sdkjs-plugins/v1/plugins.js",
+    "bundledSha256": "1bc0bd71eebcb477ceaaee3ab00ed1a10ce7eae117ec68ae8024645c435f524e"
+  },
+  "review": {
+    "scope": [
+      "No dynamic script/eval/HTML execution in the privileged Docs API SDK",
+      "Only desktop Word/docx iframe routes",
+      "Reject non-http(s), workbench origin, credential/query/hash URLs",
+      "Inbound exact iframe window and origin; outbound exact origin",
+      "Local plugin initialization eval isolated by CSP sandbox without same-origin",
+      "Only active editor child window/channel/key can bind plugin bridge"
+    ],
+    "limits": [
+      "Static source review and regression checks are not a maintainer security approval",
+      "The chosen document service receives the selected contract and still requires customer authorization"
+    ]
+  }
+}

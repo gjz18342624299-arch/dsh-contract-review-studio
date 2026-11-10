@@ -1,6 +1,6 @@
 {
   "name": "dsh-contract-review-studio",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "private": true,
   "type": "module",
   "description": "合同审查工作台 · 本地方案版",
@@ -42,5 +42,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/gjz18342624299-arch/dsh-contract-review-studio.git"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
   }
 }
