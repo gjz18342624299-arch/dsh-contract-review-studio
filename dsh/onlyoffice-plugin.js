@@ -1,3 +1,4 @@
+import {pluginRelayPage} from './onlyoffice-relay.js';
 import {readFileSync} from 'node:fs';
 export const pluginSDK=readFileSync(new URL('../public/real-files/onlyoffice-plugins.js',import.meta.url),'utf8');
 export const officePluginGuid='asc.{B2211DCF-C3E4-4EF0-A61D-01D5C3030061}';
@@ -5,15 +6,17 @@ export function pluginConfig(root,channel,parentOrigin,key){
  const query=new URLSearchParams({channel,parentOrigin,key});
  return {name:'合同审查联动',guid:officePluginGuid,baseUrl:root+'/',variations:[{description:'定位原文与应用审查建议',url:'index.html?'+query+'&runtime=1',icons:[],isSystem:true,isVisual:false,isViewer:false,EditorsSupport:['word'],initDataType:'none',initData:'',buttons:[]}]};
 }
-export const pluginPage=()=>`<!doctype html><meta charset="utf-8"><script>${pluginSDK}</script><script>${pluginScript}</script>`;
+export const pluginPage=editor=>pluginRelayPage(editor,officePluginGuid);
+export const pluginRuntimePage=()=>`<!doctype html><meta charset="utf-8"><script>${pluginSDK}</script><script>${pluginScript}</script>`;
 export const pluginScript=String.raw`
 (function(){
  'use strict';
  document.documentElement.setAttribute('data-dsh-plugin','loaded');
- var params=new URLSearchParams(location.search),channel=params.get('channel'),origin=params.get('parentOrigin'),key=params.get('key');
+ var params=new URLSearchParams(location.search),channel=params.get('channel'),relayOrigin=params.get('relayOrigin'),origin=relayOrigin||params.get('parentOrigin'),key=params.get('key');
  if(!/^[a-f0-9]{48}$/.test(channel||'')||!origin||!key){document.documentElement.setAttribute('data-dsh-plugin','invalid-parameters');return;}
+ if(relayOrigin){try{var relayURL=new URL(relayOrigin);if(!['http:','https:'].includes(relayURL.protocol)||relayURL.origin!==new URL(location.href).origin||relayURL.href!==relayURL.origin+'/')return;}catch{return;}}
  document.documentElement.setAttribute('data-dsh-plugin','configured');
- var host=window.parent.parent,busy=false,readyPulse=null;
+ var host=relayOrigin?window.parent:window.parent.parent,busy=false,readyPulse=null;
  function send(message){host.postMessage(Object.assign({source:'dsh-onlyoffice-plugin',channel:channel,key:key},message),origin==='dsh-desktop://harness'?'*':origin)}
  function comparableHTML(value){return typeof value==='string'?value.replace(/ class="docData;[^"]*"/g,''):JSON.stringify(value);}
  var undoRecord=null;

@@ -217,7 +217,7 @@ AI 输出用于辅助阅读和起草，用户应核对事实、原文定位、�
 
 - 正文编辑、历史预览、干净版导出只加载包内固定且有 SRI 校验的 SDK；网关返回的 apiUrl 不再用作脚本源。
 - apiUrl 仅解析为 HTTP(S) 文档服务路径，拒绝同源、凭据、查询参数、片段及非标准 SDK 路径。每个编辑器独立确定来源，消息校验来源和窗口，合同配置仅发送到精确来源。
-- 本地插件页使用固定插件 SDK，并通过 CSP sandbox（不允许 same-origin）隔离其插件初始化代码。插件桥只接受当前编辑器子窗口及当前 channel/key。
+- 本地插件使用固定 SDK；固定转发页保留官方初始化协议，执行层通过 CSP 与 iframe sandbox（不允许 same-origin）隔离插件初始化代码。插件桥只接受当前编辑器子窗口及当前 channel/key。
 - 安全测试：运行 npm test。固定源码、校验值与静态审核范围见 [SDK provenance](docs/onlyoffice-sdk-provenance.json)。Desktop 实测见 [验证记录](docs/verification-0.10.3.md)。
 - ONLYOFFICE SDK 按其 AGPLv3 和附加条款分发，保留原始版权和完整许可。修改后的 SDK 源码直接随安装包提供，设置页提供许可证和源码入口。
 

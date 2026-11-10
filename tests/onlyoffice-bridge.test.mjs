@@ -53,3 +53,33 @@ test('plugin bridge ignores sibling frames and forged results while retaining cu
   } finally { bridge.dispose(); }
   assert.equal(listeners.size, 0, 'closing the document removes the bridge listener');
 });
+
+test('opaque plugin is bound to the selected editor and keeps its initial peer origin', async () => {
+  const listeners = new Set(), sent = [];
+  const window = {addEventListener(type, listener) { listeners.add(listener); }, removeEventListener(type, listener) { listeners.delete(listener); }};
+  const context = vm.createContext({window, crypto: webcrypto, setTimeout, clearTimeout});
+  vm.runInContext(source, context);
+  const frame = {contentWindow: {}}, sibling = {parent: {}};
+  const plugin = {parent: frame.contentWindow, postMessage(...args) { sent.push(args); }};
+  const meta = {origin: 'https://office.example', channel: 'c'.repeat(48), key: 'current-contract-v2'};
+  const bridge = context.createOfficeBridge(meta, () => frame);
+  const send = (peer, origin, value) => {
+    for (const listener of listeners) listener({source: peer, origin, data: {source: 'dsh-onlyoffice-plugin', channel: meta.channel, key: meta.key, ...value}});
+  };
+  try {
+    const operation = bridge.run('read'); let settled = false;
+    operation.then(() => { settled = true; }, () => { settled = true; });
+    await tick();
+    send(sibling, 'null', {type: 'ready'});
+    await tick(); assert.equal(sent.length, 0);
+    send(plugin, 'null', {type: 'ready'});
+    await tick(); assert.equal(sent.length, 1);
+    assert.equal(sent[0][1], '*', 'opaque target is reachable only through its selected WindowProxy');
+    const command = sent[0][0];
+    send(plugin, meta.origin, {type: 'ready'});
+    send(plugin, meta.origin, {type: 'result', id: command.id, result: {ok: true, text: 'origin changed'}});
+    await tick(); assert.equal(settled, false, 'a bound peer cannot change its accepted origin with another ready pulse');
+    send(plugin, 'null', {type: 'result', id: command.id, result: {ok: true, text: 'opaque current contract'}});
+    assert.equal((await operation).text, 'opaque current contract');
+  } finally { bridge.dispose(); }
+});

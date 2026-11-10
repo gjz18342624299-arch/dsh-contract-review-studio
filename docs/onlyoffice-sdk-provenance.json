@@ -21,7 +21,7 @@
       "Only desktop Word/docx iframe routes",
       "Reject non-http(s), workbench origin, credential/query/hash URLs",
       "Inbound exact iframe window and origin; outbound exact origin",
-      "Local plugin initialization eval isolated by CSP sandbox without same-origin",
+      "Local plugin initialization eval isolated by CSP/iframe sandbox without same-origin; fixed relay has no eval and binds editor/runtime/main windows",
       "Only active editor child window/channel/key can bind plugin bridge"
     ],
     "limits": [
