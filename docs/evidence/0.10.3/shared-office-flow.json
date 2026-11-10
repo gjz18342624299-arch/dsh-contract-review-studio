@@ -1,0 +1,61 @@
+{
+  "kind": "DSH Desktop 0.13.2 native installed host with isolated Chromium client; not native Desktop screenshots",
+  "sourceRuntimeCommit": "077757d0de12286a3c497773cfbd48efe42b1117",
+  "desktopVersion": "0.13.2",
+  "system": "Windows 10 10.0.19045 x64",
+  "version": "0.10.3",
+  "browser": "157.0.8103.39",
+  "documentServerVersion": "9.4.0",
+  "ok": true,
+  "configurationRestored": true,
+  "testPermissions": "Local-network-access granted only to an isolated disposable Chromium context",
+  "instrumentation": "Only this isolated browser HTML response exposes closure-bound existing functions through __test; installed source and SDK files are unchanged.",
+  "checks": [
+    {
+      "name": "temporary shared-service configuration saved; original file absent"
+    },
+    {
+      "name": "actual editor opening outcome",
+      "phase": "ready"
+    },
+    {
+      "name": "opened synthetic DOCX and read actual editor text",
+      "phase": "ready",
+      "contracts": 1
+    },
+    {
+      "name": "tracked replacement and reread verified",
+      "ok": true
+    },
+    {
+      "name": "saved immutable Word snapshot and durable version",
+      "bytes": 25689,
+      "sha256": "2982878ead51d2b992c173aea46bc856f9e0845979a77716b3888358910a29d4"
+    },
+    {
+      "name": "clean Word copy exported and text verified",
+      "bytes": 25791,
+      "sha256": "aad6459be896b7eacb4ce4cd15f4bf0065e1e179222d343eea4e35752e98fcd3"
+    },
+    {
+      "name": "history opened read-only without changing current working identity"
+    },
+    {
+      "name": "unmodified installed HTML client opened current synthetic working copy through actual UI selectors",
+      "htmlSha256": "d68fff51cfe9e93abba12e0906080482dd5f6461cbaa40be0038a967feec56a3",
+      "hooks": false
+    },
+    {
+      "name": "unmodified HTML client opened saved Word history read-only through actual UI selectors",
+      "hooks": false
+    }
+  ],
+  "screenshots": [
+    "../../images/editor-0.10.3.png",
+    "../../images/history-readonly-0.10.3.png"
+  ],
+  "limits": [
+    "Screenshots use unmodified installed HTML and synthetic data; they are Chromium client captures, not native Desktop window captures",
+    "Full local Docker ONLYOFFICE editing and native Desktop editing input were not covered"
+  ]
+}

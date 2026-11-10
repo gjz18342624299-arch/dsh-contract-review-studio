@@ -1,0 +1,96 @@
+{
+  "sourceRuntimeCommit": "077757d0de12286a3c497773cfbd48efe42b1117",
+  "desktopVersion": "0.13.2",
+  "system": "Windows 10 10.0.19045 x64",
+  "version": "0.10.3",
+  "packageSha256": "353e62d7f539d1d1de07b5723e6c8717dd437b264a013bc32ef52886a281a5cf",
+  "method": "Native pluginManager.installBundle followed by native Restart Harness",
+  "application": "applied",
+  "resources": [
+    {
+      "route": "status",
+      "status": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 30,
+      "sha256": "29d55fcc2eba8df0e1f9eaa1f2402eee1375914959ca98ce72d44a6b5f04ba9d",
+      "data": {
+        "ok": true,
+        "version": "0.10.3"
+      }
+    },
+    {
+      "route": "index.html",
+      "status": 200,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 438351,
+      "sha256": "d68fff51cfe9e93abba12e0906080482dd5f6461cbaa40be0038a967feec56a3",
+      "matchesSource": true
+    },
+    {
+      "route": "real-files/onlyoffice-api.js",
+      "status": 200,
+      "contentType": "text/javascript",
+      "bytes": 63413,
+      "sha256": "b8a6dfe7560aaa8a6ae1b75d857ea6e71d2b7880d684e4c1b2ca69870a65c32d",
+      "matchesSource": true
+    },
+    {
+      "route": "real-files/ONLYOFFICE-LICENSE.txt",
+      "status": 200,
+      "contentType": "application/octet-stream",
+      "bytes": 37800,
+      "sha256": "3a9b4b6ab698d668dcedcda1c2da598f4ca9789a0d8b4aefb90e00e2cb425040",
+      "matchesSource": true
+    },
+    {
+      "route": "/contract-onlyoffice/plugin/index.html",
+      "status": 200,
+      "bytes": 2542,
+      "sha256": "a6c52c731d855fd445ce676a81c3c957de6c78a26309aec2d23fa1ccfdcf7cef",
+      "csp": "default-src 'none'; script-src 'unsafe-inline'; frame-src 'self'; style-src 'unsafe-inline'"
+    },
+    {
+      "route": "/contract-onlyoffice/plugin/runtime.html",
+      "status": 200,
+      "bytes": 35611,
+      "sha256": "1c2be19fa16fcf30140322bebbd5682dfdab9cd6f33a8a7e8eba40c4341d9ee6",
+      "csp": "sandbox allow-scripts; default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; connect-src http: https:; style-src 'unsafe-inline'; img-src data:"
+    },
+    {
+      "route": "/contract-onlyoffice/plugin/sdk.js",
+      "status": 200,
+      "bytes": 15196,
+      "sha256": "1bc0bd71eebcb477ceaaee3ab00ed1a10ce7eae117ec68ae8024645c435f524e",
+      "csp": null
+    }
+  ],
+  "sourceFileChecks": [
+    {
+      "path": "package.json",
+      "sha256": "3ac98efa1d580d4bff4c93f188b2b3278e2528e1fc9a3acf9980ae4cbeee289f",
+      "matchesSource": true
+    },
+    {
+      "path": "dsh/onlyoffice.js",
+      "sha256": "b32ee5581e93a25bc88912cd1ec89383f124b3aebe747049be5dcf54124e7316",
+      "matchesSource": true
+    },
+    {
+      "path": "dsh/onlyoffice-plugin.js",
+      "sha256": "722eb1622220e7e57c878e374fdfcb76f093e7b48293cad380e21c484e43db28",
+      "matchesSource": true
+    },
+    {
+      "path": "dsh/onlyoffice-relay.js",
+      "sha256": "01eccb04d7fd11888c34e6376c7630e5fc8024f6958e176f1499322ec8f551c9",
+      "matchesSource": true
+    },
+    {
+      "path": "public/real-files/onlyoffice-plugins.js",
+      "sha256": "1bc0bd71eebcb477ceaaee3ab00ed1a10ce7eae117ec68ae8024645c435f524e",
+      "matchesSource": true
+    }
+  ],
+  "nativeUI": "Native accessibility tree observed 本地工作台 0.10.3 after restart; native screenshot capture timed out",
+  "configurationRestored": true
+}
