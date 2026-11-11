@@ -99,6 +99,57 @@ body{font-family:"Segoe UI","Microsoft YaHei",sans-serif;-webkit-font-smoothing:
 <symbol id="i-link" viewBox="0 0 24 24"><path d="M9 15l6-6M8 13l-2 2a3.5 3.5 0 005 5l3-3M16 11l2-2a3.5 3.5 0 00-5-5l-3 3"/></symbol>
 </defs></svg>
 <div id="app"></div><div id="layers"></div><div id="toast" role="status" aria-live="polite"></div>
+<script id="onboarding-demo-model">/* Synthetic onboarding data and local-only review actions. */
+(function (root) {
+  'use strict';
+  const projectId = 'onboarding-demo-project-v1';
+  const contractId = 'onboarding-demo-contract-v1';
+  const copy = value => JSON.parse(JSON.stringify(value));
+  function create(sampleFactory) {
+    const contract = sampleFactory(contractId, '演示合同 · 网站设计服务（虚构）');
+    Object.assign(contract, {
+      onboardingDemo: true, projectId, kind: 'service', sample: true,
+      partyA: '示例甲方有限公司（虚构）', partyB: '示例乙方有限公司（虚构）',
+      templateId: null, ruleIds: [], annotations: [], checks: [],
+      decisions: {}, overrides: {}, needsReview: false, updated: '演示材料',
+      snapshot: { name: '预设演示检查清单', version: 1, reviewMode: 'demo', rules: [] }
+    });
+    contract.risks.forEach(risk => {
+      risk.quote = contract.clauses[risk.clause].text;
+      risk.original = risk.quote;
+      risk.draft = risk.suggestion;
+      risk.basis = '预设演示关注点 · 非模型审查或已核验法律结论';
+    });
+    contract.versions = [{ id: 'onboarding-original-v1', name: '演示原稿', time: '演示材料', clauses: copy(contract.clauses), decisions: {}, overrides: {} }];
+    const project = { id: projectId, onboardingDemo: true, name: '演示项目 · 从风险到修改',
+      description: '虚构合同与预设风险。体验定位原文、采纳修改、撤回和导出。',
+      created: '演示材料', contractIds: [contractId], fields: {}, confirmed: {}, reviewed: true, completed: false };
+    return { project, contract };
+  }
+  function add(data, sampleFactory, automatic = false) {
+    if (!data.v2 || !Array.isArray(data.v2.projects) || !Array.isArray(data.contracts)) return null;
+    if (automatic && (data.v2.onboardingDemoSeen || data.v2.projects.length || data.contracts.length)) return null;
+    const existing = data.v2.projects.find(p => p.id === projectId);
+    if (existing) return existing.onboardingDemo ? existing : null;
+    if (data.contracts.some(c => c.id === contractId)) return null;
+    const demo = create(sampleFactory);
+    data.v2.projects.unshift(demo.project);
+    data.contracts.push(demo.contract);
+    data.v2.onboardingDemoSeen = true;
+    if (!data.active) data.active = demo.contract.id;
+    return demo.project;
+  }
+  function decide(contract, riskId, status, text) {
+    if (!contract?.onboardingDemo || !['accepted', 'kept', 'open'].includes(status)) throw Error('仅支持演示合同的本地处理');
+    const risk = contract.risks.find(item => item.id === riskId);
+    if (!risk) throw Error('演示风险不存在');
+    if (status === 'open') delete contract.decisions[riskId];
+    else contract.decisions[riskId] = { status, ...(status === 'accepted' ? { text: text || risk.suggestion } : {}) };
+    contract.updated = new Date().toLocaleString('zh-CN');
+  }
+  root.ContractReviewDemo = Object.freeze({ projectId, contractId, create, add, decide });
+})(globalThis);
+</script>
 <script>
 'use strict';
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -2338,6 +2389,77 @@ workbenchSettings=function(){
   main.querySelector('#office-service-save').onclick=()=>run('save');main.querySelector('#office-service-test').onclick=()=>run('test');main.querySelector('#office-service-reset').onclick=()=>run('reset');
  };
 };
+/* onboarding-demo-integration:v1 */
+if(window.ContractReviewDemo){
+ const demo=window.ContractReviewDemo;
+ demo.add(data,sample,true);
+ const demoBaseRisk=riskHTML;
+ riskHTML=function(c,r){
+  if(!c.onboardingDemo)return demoBaseRisk(c,r);
+  const d=c.decisions[r.id]||{status:'open'},active=selected===r.id;
+  return `<article class="risk-card ${active?'active':''}"><button class="risk-heading" data-action="select-risk" data-id="${esc(r.id)}" aria-expanded="${active}"><span class="risk-num">${c.risks.indexOf(r)+1}</span><span class="risk-title">${esc(r.title)}</span>${badge(r,c)}</button>${active?`<div class="risk-detail"><div class="risk-label">原文 <button class="text-link" data-demo-locate="${r.clause}">定位原文</button></div><div class="quote">${esc(r.quote)}</div><div class="risk-label">为什么要改</div><p class="explanation">${esc(r.why)}</p><div class="suggestion"><div class="risk-label">${d.status==='accepted'?'已采纳的写法':'修改建议'}</div><p>${esc(d.text||r.suggestion)}</p></div><div class="risk-actions">${d.status==='accepted'||d.status==='kept'?`<button class="btn soft" data-action="undo" data-id="${esc(r.id)}">撤回处理</button>`:`<button class="btn primary" data-v2="wps-insert" data-id="${esc(r.id)}">采纳修改（演示）</button><button class="btn" data-action="keep" data-id="${esc(r.id)}">保留原文</button>`}</div><div class="risk-footer">预设演示关注点 · 非法律结论</div></div>`:''}</article>`;
+ };
+ const demoBaseReview=renderReview;
+ renderReview=function(){
+  const c=current();
+  if(!c?.onboardingDemo)return demoBaseReview();
+  old.review();
+  const notice=document.createElement('div');notice.className='v2-note';notice.setAttribute('role','note');
+  notice.innerHTML='<strong>演示合同 · 虚构材料与预设风险</strong><br>① 点风险查看原文 → ② 采纳修改 → ③ 查看左侧增删 → ④ 撤回或导出演示 Word。此演示不调用模型或在线 Word 服务。';
+  document.querySelector('.document-side')?.prepend(notice);
+  const meta=document.querySelector('.paper-meta');if(meta)meta.textContent='虚构演示材料 · 不用于实际签约';
+  document.querySelectorAll('[data-v2="wps-insert"]').forEach(b=>{b.disabled=false;b.textContent='采纳修改（演示）';});
+  const bottom=document.querySelector('.panel-bottom span');if(bottom)bottom.textContent='预设演示风险 · 非模型审查结果';
+  document.querySelector('[data-action="versions"]')?.setAttribute('data-demo-history','');
+ };
+ const demoBaseShell=shell;
+ shell=function(){
+  demoBaseShell();
+  if(view!=='projects')return;
+  const intro=document.querySelector('#project-intro');if(!intro)return;
+  const button=document.createElement('button');button.className='btn soft';button.dataset.demoOpen='true';
+  button.textContent=data.v2.projects.some(p=>p.id===demo.projectId)?'打开演示项目 →':'添加演示项目 →';
+  intro.prepend(button,document.createTextNode(' '));
+ };
+ window.addEventListener('click',event=>{
+  const button=event.target.closest('button');if(!button)return;
+  if(button.dataset.demoOpen){
+   event.preventDefault();event.stopImmediatePropagation();
+   const project=demo.add(data,sample);if(!project){toast('无法添加演示项目，已有材料未改变');return;}
+   save();openDoc(demo.contractId);return;
+  }
+  const c=current();if(!c?.onboardingDemo)return;
+  if(button.dataset.demoLocate!==undefined){event.preventDefault();event.stopImmediatePropagation();document.querySelectorAll('.clause')[Number(button.dataset.demoLocate)]?.scrollIntoView({block:'center',behavior:'smooth'});return;}
+  const a=button.dataset.action,v=button.dataset.v2,id=button.dataset.id;
+  if(['run-project','run-selected','run-current'].includes(v)){
+   event.preventDefault();event.stopImmediatePropagation();openDoc(c.id);toast('演示使用预设风险，不会发起模型审查');return;
+  }
+  if(v==='wps-insert'||v==='wps-undo'||['accept','keep','undo'].includes(a)){
+   event.preventDefault();event.stopImmediatePropagation();
+   demo.decide(c,id,v==='wps-insert'||a==='accept'?'accepted':a==='keep'?'kept':'open',c.decisions[id]?.text);
+   save();renderReview();toast('演示修改已保存到本机');return;
+  }
+  if(a==='export'||button.dataset.demoExport){
+   event.preventDefault();event.stopImmediatePropagation();
+   if(button.dataset.demoExport){download(old.docx(true),'演示合同（虚构·带修改）.docx');return;}
+   modal('导出演示合同','<p class="modal-sub">导出当前演示修改，Word 文件带有“虚构示例”说明。无需配置在线编辑服务。</p>','<button class="btn primary" data-demo-export="true">下载演示 Word</button>'+action('close','关闭'));return;
+  }
+  if(a==='save-version'){
+   event.preventDefault();event.stopImmediatePropagation();
+   c.versions.push({id:uid('demo-version'),name:'演示修改 · '+now(),time:now(),clauses:clone(c.clauses),decisions:clone(c.decisions),overrides:clone(c.overrides)});save();toast('演示版本已保存（正文与处理记录）');return;
+  }
+  if(a==='versions'){
+   event.preventDefault();event.stopImmediatePropagation();
+   modal('演示版本记录',c.versions.map(v=>'<section class="compare-section"><strong>'+esc(v.name)+'</strong><p>'+esc(v.time)+' · '+Object.values(v.decisions||{}).filter(d=>d.status==='accepted').length+' 项采纳修改</p></section>').join(''),action('close','关闭'));return;
+  }
+  if(a==='ask-risk'||a==='send-chat'||a==='prompt'){
+   event.preventDefault();event.stopImmediatePropagation();
+   modal('演示风险说明','<p class="modal-sub">这些风险和建议是预设示例。真实 AI 审查与问答需要配置模型服务，并由你确认后发起。</p>',action('close','知道了'));return;
+  }
+ },true);
+}
+/* /onboarding-demo-integration:v1 */
+
 view='projects';await saveDurably();shell();
 })();
 
