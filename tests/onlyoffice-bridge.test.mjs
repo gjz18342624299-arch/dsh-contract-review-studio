@@ -83,3 +83,26 @@ test('opaque plugin is bound to the selected editor and keeps its initial peer o
     assert.equal((await operation).text, 'opaque current contract');
   } finally { bridge.dispose(); }
 });
+
+test('a superseded queued locate never reaches the editor after the previous operation finishes',async()=>{
+  const listeners=new Set(),sent=[];
+  const window={addEventListener(_type,listener){listeners.add(listener)},removeEventListener(_type,listener){listeners.delete(listener)}};
+  const context=vm.createContext({window,crypto:webcrypto,setTimeout,clearTimeout,DOMException});
+  vm.runInContext(source,context);
+  const frame={contentWindow:{}},plugin={parent:frame.contentWindow,postMessage(...args){sent.push(args)}};
+  const meta={origin:'https://office.example',channel:'d'.repeat(48),key:'synthetic-current-v3'};
+  const bridge=context.createOfficeBridge(meta,()=>frame);
+  const send=value=>{for(const listener of listeners)listener({source:plugin,origin:meta.origin,data:{source:'dsh-onlyoffice-plugin',channel:meta.channel,key:meta.key,...value}})};
+  try{
+    send({type:'ready'});
+    const read=bridge.run('read');await tick();assert.equal(sent.length,1);
+    const controller=new AbortController();
+    const stale=bridge.run('locate',{candidates:['superseded quote']},{signal:controller.signal});
+    const rejected=assert.rejects(stale,error=>error.name==='AbortError');controller.abort();
+    const latest=bridge.run('locate',{candidates:['latest quote']});
+    send({type:'result',id:sent[0][0].id,result:{ok:true,text:'synthetic current text'}});await read;await rejected;await tick();
+    assert.equal(sent.length,2,'only the latest location is sent after the pending read');
+    assert.equal(sent[1][0].candidates[0],'latest quote');
+    send({type:'result',id:sent[1][0].id,result:{ok:true,quote:'latest quote'}});await latest;
+  }finally{bridge.dispose()}
+});

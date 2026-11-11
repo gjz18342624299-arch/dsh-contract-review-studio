@@ -199,6 +199,30 @@ export const pluginScript=String.raw`
          for(var i=0;i<source.length;i++)hash=Math.imul(hash^source.charCodeAt(i),16777619);
          return {range:range,text:text,source:source,stamp:source.length+':'+(hash>>>0)+':'+paragraphId+':'+start+':'+end};
        }
+       function centerSelection(){
+         // Select() establishes the anchor but ONLYOFFICE 9.4 does not promise
+         // to scroll an already visible selection. Use the current editor's
+         // viewport when these native capabilities are present. Never cross
+         // the editor frame or change the document to highlight a location.
+         try{
+           var nativeDoc=doc.Document,drawing=nativeDoc&&nativeDoc.DrawingDocument;
+           var control=drawing&&drawing.m_oWordControl,canvas=control&&control.m_oEditor&&control.m_oEditor.HtmlElement;
+           var scroll=control&&control.m_oScrollVerApi;
+           if(!nativeDoc||typeof nativeDoc.GetSelectionBounds!=='function'||!drawing||typeof drawing.ConvertCoordsToCursor!=='function'||!canvas||!scroll||typeof scroll.scrollByY!=='function')return {supported:false};
+           if(typeof nativeDoc.Document_UpdateSelectionState==='function')nativeDoc.Document_UpdateSelectionState();
+           var bounds=nativeDoc.GetSelectionBounds();
+           if(!bounds||!bounds.Start||!bounds.End)return {supported:false};
+           var height=canvas.getBoundingClientRect().height;
+           var first=drawing.ConvertCoordsToCursor(bounds.Start.X,bounds.Start.Y,bounds.Start.Page);
+           var last=drawing.ConvertCoordsToCursor(bounds.End.X,bounds.End.Y+bounds.End.H,bounds.End.Page);
+           if(!height||first.Error||last.Error||!Number.isFinite(first.Y)||!Number.isFinite(last.Y))return {supported:false};
+           var span=Math.max(0,Math.min(last.Y-first.Y,height*0.6));
+           var delta=first.Y+span/2-height/2;
+           if(Math.abs(delta)>2)scroll.scrollByY(delta);
+           var after=drawing.ConvertCoordsToCursor(bounds.Start.X,bounds.Start.Y,bounds.Start.Page);
+           return {supported:true,centered:Math.abs(after.Y+span/2-height/2)<8,page:bounds.Start.Page+1};
+         }catch(error){return {supported:false};}
+       }
        function writeSelection(selection,replacement,insert){
          if(typeof replacement!=='string'||!replacement.trim()||replacement.length>20000||/[\r\n\t]/.test(replacement))return {ok:false,error:'请输入单段修改文字，不能包含换行或制表符。'};
          if(!insert&&replacement===selection.text)return {ok:false,error:'修改后的文字与原文相同'};
@@ -263,14 +287,14 @@ export const pluginScript=String.raw`
          doc.SetTrackRevisions(true);if(!range.SetBold(true))return {ok:false,error:'加粗未完成'};return {ok:true,text:quote,formatted:true};
        }
        if(indexed){
-         if(input.action==='locate')return {ok:true,quote:quote,count:count,occurrenceIndex:input.occurrenceIndex,anchorStamp:located.stamp};
+         if(input.action==='locate')return {ok:true,quote:quote,count:count,occurrenceIndex:input.occurrenceIndex,anchorStamp:located.stamp,viewport:centerSelection()};
          if(input.action!=='replace')return {ok:false,error:'不支持的文档操作'};
          if(input.expectedCount!==count||input.anchorStamp!==located.stamp)return {ok:false,error:'原文或位置已变化，请重新定位后确认；未写入。',count:count};
          var written=writeSelection(located,input.text,false);
          if(written.ok)written.remainingCount=exactMatches(quote,true).length;
          return written;
        }
-       if(input.action==='locate')return {ok:true,quote:quote,count:count};
+       if(input.action==='locate')return {ok:true,quote:quote,count:count,viewport:centerSelection()};
        if(input.action!=='replace')return {ok:false,error:'不支持的文档操作'};
        var replacement=input.text;
        // Keep the existing bookmark-based undo for exact, unique matches. A
@@ -290,7 +314,7 @@ export const pluginScript=String.raw`
        }
        return {ok:true,text:replacement,operation:{before:quote,after:replacement,bookmark:bookmark},verified:!!bookmark};
      }catch(error){return {ok:false,error:'文档操作失败：'+String(error.message||error)}}
-   },false,true,function(result){finishRequest(request,result)});
+   },false,!['read','count','locate','selection'].includes(request.action),function(result){finishRequest(request,result)});
  }
  Asc.plugin.init=function(){
    document.documentElement.setAttribute('data-dsh-plugin','ready');

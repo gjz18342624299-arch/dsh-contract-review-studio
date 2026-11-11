@@ -99,12 +99,246 @@ body{font-family:"Segoe UI","Microsoft YaHei",sans-serif;-webkit-font-smoothing:
 <symbol id="i-link" viewBox="0 0 24 24"><path d="M9 15l6-6M8 13l-2 2a3.5 3.5 0 005 5l3-3M16 11l2-2a3.5 3.5 0 00-5-5l-3 3"/></symbol>
 </defs></svg>
 <div id="app"></div><div id="layers"></div><div id="toast" role="status" aria-live="polite"></div>
-<script id="onboarding-demo-model">/* Synthetic onboarding data and local-only review actions. */
+<style id="review-layout-style">.workspace[data-adjustable-review]{grid-template-columns:minmax(0,1fr) 10px var(--review-pane-width,440px)!important;overflow:hidden;position:relative}
+.workspace[data-adjustable-review]>.document-side{grid-column:1;grid-row:1;min-width:0}
+.workspace[data-adjustable-review]>.panel{grid-column:3;grid-row:1;min-width:0;border-left:0}
+.review-divider{grid-column:2;grid-row:1;cursor:col-resize;touch-action:none;position:relative;background:#f1f3f5;border-inline:1px solid #e0e5e9;z-index:9}
+.review-divider::after{content:'';position:absolute;left:3px;top:calc(50% - 22px);width:2px;height:44px;border-radius:3px;background:#aeb8c3}
+.review-divider:hover,.review-divider:focus-visible,.review-resizing>.review-divider{background:#dce5ed;outline:none}
+.workspace[data-adjustable-review]>.panel>.panel-tabs{grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-auto-flow:row;grid-template-rows:minmax(0,1fr);align-items:center;padding-block:0!important}
+.workspace[data-adjustable-review]>.panel>.panel-tabs:has(.review-pane-toggle){grid-template-columns:repeat(3,minmax(0,1fr)) 28px!important;gap:5px!important;padding-right:8px!important}
+.panel-tabs .panel-tab{white-space:nowrap;flex-shrink:0;min-width:0;width:100%}
+.workspace[data-adjustable-review]>.panel>.panel-tabs>.panel-tab{height:100%;min-height:0}
+.review-pane-toggle{display:grid;place-items:center;padding:0;margin-left:0;flex:0 0 28px;width:28px;min-width:28px;max-width:28px;justify-self:end;align-self:center;height:30px;border:1px solid #dce2e8;border-radius:5px;line-height:0;background:white;color:#637080}
+.review-pane-toggle>svg,.review-pane-restore>svg{display:block;width:16px;height:16px;flex-shrink:0}
+.review-pane-toggle:hover,.review-pane-restore:hover{background:#edf1f5;color:#242830}
+.review-pane-restore{display:none;grid-column:2;grid-row:1;background:#fff;border-left:1px solid #dce2e8;align-items:center;flex-direction:column;gap:16px;padding:16px 8px;color:#586777;font-size:12px}
+.review-pane-restore>span:last-child{writing-mode:vertical-rl;letter-spacing:3px}
+.workspace.review-pane-collapsed{grid-template-columns:minmax(0,1fr) 44px!important}
+.workspace.review-pane-collapsed>.review-divider,.workspace.review-pane-collapsed>.panel{display:none!important}
+.workspace.review-pane-collapsed>.review-pane-restore{display:flex}
+.review-drag-shield{position:fixed;inset:0;z-index:99999;cursor:col-resize;touch-action:none;user-select:none}
+.review-resizing{user-select:none}
+@media(max-width:800px){
+ .workspace[data-adjustable-review]>.review-divider,.workspace[data-adjustable-review] .review-pane-toggle,.workspace[data-adjustable-review]>.review-pane-restore{display:none!important}
+ .workspace[data-adjustable-review].mobile-risk>.panel{display:flex!important}
+ .workspace[data-adjustable-review].mobile-doc>.panel{display:none!important}
+ .workspace[data-adjustable-review]>.panel>.panel-tabs:has(.review-pane-toggle){grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+</style>
+<style id="review-flow-style">.element-review-page .v2-table input[data-inline-contract]{width:100%;max-width:480px;margin-bottom:7px}
+.field-review-actions{display:flex;gap:12px;align-items:center;flex-wrap:nowrap;min-height:28px}
+.field-review-choices{display:inline-flex;flex-shrink:0;border:1px solid #dce2e8;border-radius:5px;overflow:hidden}
+.field-review-choices>button{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;min-height:27px;border:0;background:#fff;color:#6b7885;font-size:11px;white-space:nowrap}
+.field-review-choices>button+button{border-left:1px solid #dce2e8}
+.field-review-choices>button.is-confirmed{background:#edf7f2;color:#27624c}
+.field-review-choices>button.needs-correction{background:#fff1ef;color:#a33d34}
+.field-review-choices>button:hover{background:#f1f4f6}
+.field-review-choices>button:focus-visible{outline-offset:-2px}
+.element-review-page .v2-table .field-review-source[data-v2="field"]{padding:3px 0;border:0;background:transparent;border-radius:0;min-height:27px;margin:0;color:#647789;font-size:11px;white-space:nowrap}
+.element-review-page .v2-table .field-review-source:hover{text-decoration:underline}
+.field-review-state{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;clip-path:inset(50%);border:0}
+.field-review-original{display:block;margin-top:5px}
+.field-review-bulk{display:flex;align-items:center;gap:4px}
+.element-review-page .v2-head button:disabled{background:#d4d9de;color:#65707c;border-color:#d4d9de;opacity:1;box-shadow:none}
+.review-task-empty{display:flex;flex-direction:column;align-items:center;gap:10px}
+.review-task-empty strong{color:#465363;font-size:14px}
+.review-task-empty p{line-height:1.9;max-width:300px}
+.review-task-spinner{width:25px;height:25px;border:2px solid #e1e7ec;border-top-color:#596e81;border-radius:50%;animation:review-task-spin .8s linear infinite}
+@keyframes review-task-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.review-task-spinner{animation:none;border-style:dotted}}
+</style>
+<script id="review-layout-script">/* Resize and hide the review pane without remounting the Word editor. */
+(function () {
+  'use strict';
+  const key = 'contract-review-layout-v1';
+  let preference = {width: 440, collapsed: false};
+  try {
+    const saved = JSON.parse(localStorage.getItem(key) || 'null');
+    if (saved && Number.isFinite(saved.width)) preference.width = Math.max(300, Math.min(900, saved.width));
+    if (saved?.collapsed === true) preference.collapsed = true;
+  } catch {}
+  const persist = () => { try {localStorage.setItem(key, JSON.stringify(preference));} catch {} };
+  window.addEventListener('click', event => {
+    const button = event.target.closest('.mobile-switch [data-action="mobile"]');
+    if (!button || !['doc', 'risk'].includes(button.dataset.tab)) return;
+    const workspace = button.closest('#content')?.querySelector('.workspace[data-adjustable-review]');
+    if (!workspace) return;
+    event.preventDefault(); event.stopImmediatePropagation();
+    const next = button.dataset.tab;
+    // The existing editor reuse path deliberately skips repainting the shell.
+    // Switch only visibility, keeping its global view state and live iframe.
+    if (typeof mobile !== 'undefined') mobile = next;
+    workspace.classList.toggle('mobile-doc', next === 'doc');
+    workspace.classList.toggle('mobile-risk', next === 'risk');
+    for (const sibling of button.parentElement.querySelectorAll('[data-action="mobile"]')) {
+      const active = sibling.dataset.tab === next;
+      sibling.classList.toggle('active', active);
+      sibling.setAttribute('aria-pressed', String(active));
+    }
+  }, true);
+  function install(workspace) {
+    if (workspace.dataset.adjustableReview) return;
+    const pane = workspace.querySelector(':scope > .panel');
+    const documentPane = workspace.querySelector(':scope > .document-side');
+    if (!pane || !documentPane) return;
+    workspace.dataset.adjustableReview = 'true';
+    const divider = document.createElement('div');
+    divider.className = 'review-divider';
+    divider.tabIndex = 0;
+    divider.setAttribute('role', 'separator');
+    divider.setAttribute('aria-orientation', 'vertical');
+    divider.setAttribute('aria-label', '调整正文和审查栏宽度');
+    divider.title = '拖动调整宽度；方向键微调，双击恢复';
+    pane.before(divider);
+    const toggle = document.createElement('button');
+    toggle.type = 'button'; toggle.className = 'review-pane-toggle';
+    toggle.setAttribute('aria-label', '折叠整个审查栏');
+    toggle.title = '折叠整个审查栏';
+    toggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 5 7 7-7 7"/></svg>';
+    const restore = document.createElement('button');
+    restore.type = 'button'; restore.className = 'review-pane-restore';
+    restore.setAttribute('aria-label', '展开审查栏');
+    restore.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m15 5-7 7 7 7"/></svg><span>展开审查栏</span>';
+    workspace.append(restore);
+    const bounds = () => {
+      const total = workspace.getBoundingClientRect().width;
+      const min = Math.min(300, Math.max(180, total * .4));
+      return {min, max: Math.max(min, total - Math.min(360, total * .42) - 10)};
+    };
+    function apply() {
+      const {min, max} = bounds();
+      const width = Math.round(Math.max(min, Math.min(max, preference.width)));
+      workspace.style.setProperty('--review-pane-width', width + 'px');
+      workspace.classList.toggle('review-pane-collapsed', preference.collapsed);
+      divider.setAttribute('aria-valuemin', String(Math.round(min)));
+      divider.setAttribute('aria-valuemax', String(Math.round(max)));
+      divider.setAttribute('aria-valuenow', String(width));
+      toggle.setAttribute('aria-expanded', String(!preference.collapsed));
+      restore.setAttribute('aria-expanded', String(!preference.collapsed));
+    }
+    function attachToggle() {
+      const tabs = pane.querySelector('.panel-tabs');
+      if (tabs && toggle.parentElement !== tabs) tabs.append(toggle);
+    }
+    toggle.onclick = () => {preference.collapsed = true; apply(); persist(); restore.focus();};
+    restore.onclick = () => {preference.collapsed = false; attachToggle(); apply(); persist(); toggle.focus();};
+    divider.onkeydown = event => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const {min, max} = bounds();
+      const width = Number(divider.getAttribute('aria-valuenow'));
+      preference.width = event.key === 'Home' ? min : event.key === 'End' ? max : width + (event.key === 'ArrowLeft' ? 20 : -20);
+      apply(); persist();
+    };
+    divider.ondblclick = () => {preference.width = 440; apply(); persist();};
+    let cancelDrag = null;
+    divider.onpointerdown = event => {
+      if (event.button !== 0) return;
+      event.preventDefault(); cancelDrag?.();
+      const shield = document.createElement('div');
+      shield.className = 'review-drag-shield'; document.body.append(shield);
+      const move = e => {
+        const {min, max} = bounds();
+        preference.width = Math.max(min, Math.min(max, workspace.getBoundingClientRect().right - e.clientX - 5));
+        apply();
+      };
+      cancelDrag = () => {
+        window.removeEventListener('pointermove', move, true);
+        window.removeEventListener('pointerup', finish, true);
+        window.removeEventListener('pointercancel', finish, true);
+        window.removeEventListener('blur', finish);
+        shield.remove(); workspace.classList.remove('review-resizing'); cancelDrag = null;
+      };
+      const finish = () => {cancelDrag?.(); persist();};
+      workspace.classList.add('review-resizing');
+      window.addEventListener('pointermove', move, true);
+      window.addEventListener('pointerup', finish, true);
+      window.addEventListener('pointercancel', finish, true);
+      window.addEventListener('blur', finish);
+    };
+    const resize = new ResizeObserver(apply); resize.observe(workspace);
+    const observer = new MutationObserver(() => {
+      if (!workspace.isConnected) {cancelDrag?.(); resize.disconnect(); observer.disconnect();}
+      else attachToggle();
+    });
+    observer.observe(document.body, {childList: true, subtree: true});
+    attachToggle(); apply();
+  }
+  const scan = () => document.querySelectorAll('.workspace').forEach(install);
+  new MutationObserver(scan).observe(document.documentElement, {childList: true, subtree: true});
+  scan();
+})();
+</script>
+<script id="project-lifecycle-model">/* Project deletion changes local records only. Original files and remote Word files stay intact. */
+(function (root) {
+  'use strict';
+  const copy = value => JSON.parse(JSON.stringify(value));
+  const validId = id => typeof id === 'string' && id.length > 0;
+  const references = (project, id) => Array.isArray(project?.contractIds) && project.contractIds.includes(id);
+
+  function remove(data, id) {
+    const state = data?.v2;
+    if (!validId(id) || !Array.isArray(state?.projects) || !Array.isArray(data.contracts)) return null;
+    if (state.removedProjects != null && !Array.isArray(state.removedProjects) || state.removedMaterials != null && !Array.isArray(state.removedMaterials)) return null;
+    const matches = state.projects.filter(project => project?.id === id);
+    // Duplicate project IDs make the intended owner ambiguous; leave the complete workspace unchanged.
+    if (matches.length !== 1) return null;
+    const project = matches[0], others = state.projects.filter(item => item !== project);
+    const related = data.contracts.filter(contract => contract && (contract.projectId === id || validId(contract.id) && references(project, contract.id)));
+    const removed = new Set(), reassigned = [];
+    for (const contract of related) {
+      const explicitOwner = others.find(item => validId(item?.id) && item.id === contract.projectId);
+      const referencedOwner = validId(contract.id) ? others.find(item => validId(item?.id) && references(item, contract.id)) : null;
+      const owner = explicitOwner || referencedOwner;
+      if (!owner) removed.add(contract);
+      else if (contract.projectId !== owner.id) reassigned.push({ contract, projectId: owner.id });
+    }
+    // Clone every affected record before mutating. Shared contract snapshots retain their original owner.
+    const removedAt = new Date().toISOString();
+    const archive = {
+      project: copy(project), contracts: copy(related), removedAt,
+      removedContractIds: related.filter(contract => removed.has(contract)).map(contract => contract.id).filter(validId),
+      retainedContractIds: related.filter(contract => !removed.has(contract)).map(contract => contract.id).filter(validId)
+    };
+    const materialArchives = related.filter(contract => removed.has(contract)).map(contract => ({ contract: copy(contract), projectId: id, removedAt }));
+    const contracts = data.contracts.filter(contract => !removed.has(contract));
+    let active = data.active;
+    if (!contracts.some(contract => contract?.id === active)) {
+      const linked = others.flatMap(item => Array.isArray(item?.contractIds) ? item.contractIds : []).find(contractId => validId(contractId) && contracts.some(contract => contract?.id === contractId));
+      active = linked || contracts.find(contract => validId(contract?.id))?.id || '';
+    }
+
+    state.removedProjects ||= [];
+    state.removedMaterials ||= [];
+    state.removedProjects.push(archive);
+    state.removedMaterials.push(...materialArchives);
+    for (const assignment of reassigned) assignment.contract.projectId = assignment.projectId;
+    state.projects = others;
+    data.contracts = contracts;
+    data.active = active;
+    // An explicit delete-to-empty choice must survive even if a prior ID/name conflict hid onboarding.
+    if (others.length === 0) state.onboardingDemoSeen = true;
+    if (project.onboardingDemo) {
+      state.onboardingDemoSeen = true;
+      state.onboardingDemoDismissed = true;
+    }
+    return archive;
+  }
+
+  root.ContractReviewProjects = Object.freeze({ remove });
+})(globalThis);
+</script>
+<script id="onboarding-demo-model">/* Synthetic onboarding material. Editing uses the normal Word workflow. */
 (function (root) {
   'use strict';
   const projectId = 'onboarding-demo-project-v1';
   const contractId = 'onboarding-demo-contract-v1';
+  const documentName = '演示合同-网站设计服务（虚构）.docx';
+  const documentBase64 = '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';
   const copy = value => JSON.parse(JSON.stringify(value));
+  const preparations = new WeakMap();
+  const unsaved = new WeakSet();
   function create(sampleFactory) {
     const contract = sampleFactory(contractId, '演示合同 · 网站设计服务（虚构）');
     Object.assign(contract, {
@@ -120,34 +354,88 @@ body{font-family:"Segoe UI","Microsoft YaHei",sans-serif;-webkit-font-smoothing:
       risk.draft = risk.suggestion;
       risk.basis = '预设演示关注点 · 非模型审查或已核验法律结论';
     });
-    contract.versions = [{ id: 'onboarding-original-v1', name: '演示原稿', time: '演示材料', clauses: copy(contract.clauses), decisions: {}, overrides: {} }];
+    contract.versions = [{ id: 'onboarding-original-v1', name: '演示原稿', time: '演示材料', clauses: copy(contract.clauses), decisions: {}, overrides: {}, textOnly: true }];
     const project = { id: projectId, onboardingDemo: true, name: '演示项目 · 从风险到修改',
-      description: '虚构合同与预设风险。体验定位原文、采纳修改、撤回和导出。',
+      description: '自带虚构 Word 合同与预设风险。体验定位原文、采纳修改、保存和版本比较。',
       created: '演示材料', contractIds: [contractId], fields: {}, confirmed: {}, reviewed: true, completed: false };
     return { project, contract };
   }
   function add(data, sampleFactory, automatic = false) {
     if (!data.v2 || !Array.isArray(data.v2.projects) || !Array.isArray(data.contracts)) return null;
-    if (automatic && (data.v2.onboardingDemoSeen || data.v2.projects.length || data.contracts.length)) return null;
+    if (data.v2.onboardingDemoDismissed || automatic && data.v2.onboardingDemoSeen) return null;
     const existing = data.v2.projects.find(p => p.id === projectId);
-    if (existing) return existing.onboardingDemo ? existing : null;
+    if (existing) {
+      if (!existing.onboardingDemo) return null;
+      data.v2.onboardingDemoSeen = true;
+      return existing;
+    }
     if (data.contracts.some(c => c.id === contractId)) return null;
     const demo = create(sampleFactory);
-    data.v2.projects.unshift(demo.project);
+    if (data.v2.projects.some(p => String(p.name || '').trim() === demo.project.name)) return null;
+    // A bundled project joins the ordinary list once; existing active work keeps its place.
+    data.v2.projects.push(demo.project);
     data.contracts.push(demo.contract);
     data.v2.onboardingDemoSeen = true;
     if (!data.active) data.active = demo.contract.id;
     return demo.project;
   }
-  function decide(contract, riskId, status, text) {
-    if (!contract?.onboardingDemo || !['accepted', 'kept', 'open'].includes(status)) throw Error('仅支持演示合同的本地处理');
-    const risk = contract.risks.find(item => item.id === riskId);
-    if (!risk) throw Error('演示风险不存在');
-    if (status === 'open') delete contract.decisions[riskId];
-    else contract.decisions[riskId] = { status, ...(status === 'accepted' ? { text: text || risk.suggestion } : {}) };
-    contract.updated = new Date().toLocaleString('zh-CN');
+  function remove(data, id) {
+    if (id !== projectId || !Array.isArray(data.v2?.projects) || !Array.isArray(data.contracts)) return null;
+    const project = data.v2.projects.find(p => p.id === id);
+    if (!project?.onboardingDemo) return null;
+    const otherProjects = data.v2.projects.filter(p => p !== project),ids = new Set(project.contractIds || []);
+    const contracts = data.contracts.filter(c => ids.has(c.id) && (c.projectId === id || c.onboardingDemo && c.id === contractId && !c.projectId) && !otherProjects.some(p => (p.contractIds || []).includes(c.id)));
+    const removedAt = new Date().toISOString(),removed = { project: copy(project), contracts: copy(contracts), removedAt };
+    data.v2.removedProjects ||= [];
+    data.v2.removedMaterials ||= [];
+    data.v2.removedProjects.push(removed);
+    for (const contract of contracts) data.v2.removedMaterials.push({ contract: copy(contract), projectId: id, removedAt });
+    const removedIds = new Set(contracts.map(c => c.id));
+    data.v2.projects = otherProjects;
+    data.contracts = data.contracts.filter(c => !removedIds.has(c.id));
+    if (removedIds.has(data.active)) data.active = data.contracts[0]?.id || '';
+    data.v2.onboardingDemoSeen = true;
+    data.v2.onboardingDemoDismissed = true;
+    return removed;
   }
-  root.ContractReviewDemo = Object.freeze({ projectId, contractId, create, add, decide });
+  function needsWord(contract) {
+    return !!(contract?.onboardingDemo && (unsaved.has(contract) || (!contract.onlyOfficeFileId && !contract.wpsFileId && !(contract.onboardingWordVersion === 2 && contract.originalFile))));
+  }
+  async function prepare(contract, adapters) {
+    if (!needsWord(contract)) return contract;
+    if (preparations.has(contract)) return preparations.get(contract);
+    const task = (async () => {
+      if (unsaved.has(contract)) { await adapters.persist(); unsaved.delete(contract); return contract; }
+      // Only the old, local-only demonstration is upgraded. User Word identities are never replaced.
+      if (contract.onlyOfficeKey || contract.latestCapture || contract.originalFile || contract.sourceFile)
+        throw Error('此演示已有来源或工作稿记录，请恢复已有文件后继续；未用自带合同覆盖。');
+      const decisions = contract.decisions || {}, overrides = contract.overrides || {};
+      const legacyChanges = Object.keys(overrides).length > 0 || Object.values(decisions).some(d => d.status === 'accepted');
+      const before = legacyChanges ? copy({ id: 'onboarding-before-word-v2', name: '升级 Word 前的演示记录', time: new Date().toLocaleString('zh-CN'), clauses: contract.clauses, risks: contract.risks, decisions, overrides, textOnly: true }) : null;
+      const bytes = legacyChanges ? await adapters.migratedBytes(contract, documentBase64) : adapters.decode(documentBase64);
+      const originalFile = await adapters.store(bytes, documentName);
+      // Legacy accepted changes form a real Word baseline. Keep their full history for comparison.
+      const session = legacyChanges ? await adapters.session(bytes, documentName) : null;
+      if (legacyChanges && (!session?.fileId || !session?.key)) throw Error('演示 Word 会话未返回完整标识，原有演示记录未改变。');
+      if (adapters.isPresent && !adapters.isPresent(contract)) throw Error('演示项目已移除，已停止打开 Word。');
+      contract.originalFile = originalFile;
+      contract.onboardingWordVersion = 2;
+      if (session) {
+        contract.onlyOfficeFileId = session.fileId;
+        contract.onlyOfficeKey = session.key;
+        contract.onboardingWordMigrated = true;
+        contract.versions ||= [];
+        if (!contract.versions.some(v => v.id === before.id)) contract.versions.push(before);
+        for (const decision of Object.values(decisions)) if (decision.status === 'accepted') decision.wpsWritten = true;
+      }
+      unsaved.add(contract);await adapters.persist();unsaved.delete(contract);
+      return contract;
+    })();
+    preparations.set(contract, task);
+    try { return await task; }
+    finally { preparations.delete(contract); }
+  }
+  root.ContractReviewDemo = Object.freeze({ projectId, contractId, documentName, documentBase64, create, add, remove, needsWord, prepare });
 })(globalThis);
 </script>
 <script>
@@ -208,11 +496,11 @@ async function writeStoredSnapshot(key,snapshot){
 async function restoreSavedState(){
  try{
   const stored=JSON.parse(await readStoredSnapshot(STORE)??'null');
-  if(stored?.contracts?.length){data=stored;indexedPersistence=true;storageStatus='saved';return;}
+  if(Array.isArray(stored?.contracts)&&(stored.contracts.length||stored.v2)){data=stored;indexedPersistence=true;storageStatus='saved';return;}
  }catch{}
  try{
   const stored=JSON.parse(localStorage.getItem(STORE));
-  if(stored?.contracts?.length){data=stored;storageStatus='saved';}
+  if(Array.isArray(stored?.contracts)&&(stored.contracts.length||stored.v2)){data=stored;storageStatus='saved';}
  }catch{}
 }
 async function backupBeforeSourceMigration(){
@@ -576,7 +864,7 @@ renderRisks=function(){
  if(promoteQuotedIssues(c))save();
  old.risks();
  $('.review-context')?.insertAdjacentHTML('beforeend',`<div class="v2-row" style="margin-top:11px;font-size:10px">${tag(c.snapshot?.name||t?.name||'尚未选择模板')}<span class="v2-sub">V${c.snapshot?.version||t?.version||'—'} · ${(c.ruleIds||[]).length} 项</span></div>${c.needsReview?'<div class="v2-note">正文或设置已变化，旧意见需要重新检查。</div>':''}${reviewExecutionHTML(c)}`);
- if(!c.risks.length&&!manualReviewEntries(c).length&&c.kind!=='service')$('.risk-list').innerHTML=`<div class="empty">${icon('shield')}<p>${c.kind==='aux'?'这是辅助材料，不单独运行审查':c.lastRun?'当前没有风险意见':'先核对材料，再开始模型审查'}</p>${c.kind==='aux'?'':action('run-current','开始审查','','soft')}</div>`;
+ if(!c.risks.length&&!manualReviewEntries(c).length)$('.risk-list').innerHTML=`<div class="empty">${icon('shield')}<p>${c.kind==='aux'?'这是辅助材料，不单独运行审查':c.lastRun?'当前没有风险意见':'先核对材料，再开始模型审查'}</p>${c.kind==='aux'?'':action('run-current','开始审查','','soft')}</div>`;
 };
 document.addEventListener('change',event=>{
  const field=event.target.closest('textarea[data-manual-draft]'),c=current();
@@ -910,7 +1198,7 @@ doRun=async function(project=false){
  const p=project?proj():cProject(current()),cs=(project?docs(p):[current()]).filter(c=>c.kind!=='aux');if(!cs.length){toast('没有待审合同');return;}const missing=cs.find(c=>!c.reviewContextConfirmed);if(missing){pendingReview=project?'project':'current';configure(missing.id);return;}
  liveBusy=true;reviewContractId=cs[0].id;reviewProgressState={};openDoc(cs[0].id,'checks');
  try{for(const c of cs){
-  reviewContractId=c.id;activeReviewJobId=null;$('#review-progress')?.remove();
+  reviewContractId=c.id;c.reviewTaskResult={state:'running',at:new Date().toISOString()};activeReviewJobId=null;$('#review-progress')?.remove();
   const reviewStarted=performance.now();reviewProgress({});const inputSource=await currentDocumentSnapshot(c),clauses=inputSource.text.split(/\n\n/).filter(x=>x.trim()),text=clauses.join('\n\n'),snapshot=rowsSnapshot(c);queueAutomaticSummary(c,inputSource);
   const reviewConfig=()=>JSON.stringify([c.role,c.templateId,reviewStrength(c),c.note,c.legalOptions,rowsSnapshot(c).rules]);const configBefore=reviewConfig();
   const checkpoint=c.pendingAnalysis?.sourceText===text&&c.pendingAnalysis?.configSignature===configBefore?c.pendingAnalysis:null;
@@ -943,10 +1231,10 @@ if((await currentDocumentSnapshot(c)).text!==inputSource.text||reviewConfig()!==
   c.lastLegalSearch=legal;c.reviewSource={source:inputSource.source,label:snapshotSourceLabel(inputSource),sha256:inputSource.sha256||null,captureId:inputSource.captureId||null,at:new Date().toISOString()};if(revisionError)c.checks.unshift({ruleId:'revision-failed',name:'部分意见尚未生成改稿',result:'unable',detail:revisionError});
   if(result.coverage?.checksFailed)c.checks.unshift({ruleId:'incomplete-batches',name:'部分检查未完成',result:'unable',detail:(result.coverage.checks||[]).filter(x=>x.status!=='complete'&&x.status!=='succeeded'&&x.error).map(x=>(x.ruleTitles||[]).join('、')+'：'+x.error).join('；')||'未完成检查 '+result.coverage.checksFailed+' 批。'});
   c.checks.unshift({ruleId:'live-result',name:'真实模型审查',result:c.risks.length?'risk':'recheck',detail:`正文来源：${snapshotSourceLabel(inputSource)} · ${result.provider} / ${result.model} · 返回 ${result.issues.length} 项意见；不代表法律合规结论。`});
-  delete c.pendingAnalysis;c.snapshot=snapshot;c.lastRun=result.at;c.needsReview=result.coverage?result.coverage.status!=='complete':!!result.warnings?.length;c.liveReview={...result,text,configSignature:configBefore,elapsedSeconds:Math.round((performance.now()-reviewStarted)/1000)};c.runs||=[];c.runs.push({time:result.at,snapshot:clone(snapshot),checks:clone(c.checks),risks:clone(c.risks)});save();
+  delete c.pendingAnalysis;c.reviewTaskResult={state:'complete',at:new Date().toISOString()};c.snapshot=snapshot;c.lastRun=result.at;c.needsReview=result.coverage?result.coverage.status!=='complete':!!result.warnings?.length;c.liveReview={...result,text,configSignature:configBefore,elapsedSeconds:Math.round((performance.now()-reviewStarted)/1000)};c.runs||=[];c.runs.push({time:result.at,snapshot:clone(snapshot),checks:clone(c.checks),risks:clone(c.risks)});save();
  }p.reviewed=cs.every(c=>!c.needsReview);p.completed=false;const saved=await saveDurably();if(view==='review'&&cs.some(c=>c.id===current().id))renderPanel();toast(saved?(p.reviewed?'审查批次已完成，请逐条确认意见':'本轮结果已返回，请查看风险意见'):'本轮结果已返回，但本机保存失败，请先导出审查结果');
- }catch(error){if(error.name==='AbortError'){toast('审查已停止，已保留原有记录');return;}modal('本次审查未完成',`<p class="modal-sub">${esc(error.message)}</p><p>本次失败的合同保留原有正文和审查记录。</p>`,action('close','关闭'));}
- finally{liveBusy=false;stoppingReviewJobId=null;reviewContractId=null;activeReviewJobId=null;$('#review-progress')?.remove();}
+ }catch(error){const failedContract=data.contracts.find(c=>c.id===reviewContractId);if(failedContract){failedContract.reviewTaskResult={state:error.name==='AbortError'?'cancelled':'failed',error:error.message,at:new Date().toISOString()};save();}if(error.name==='AbortError'){toast('审查已停止，已保留原有记录');return;}modal('本次审查未完成',`<p class="modal-sub">${esc(error.message)}</p><p>本次失败的合同保留原有正文和审查记录。</p>`,action('close','关闭'));}
+ finally{liveBusy=false;stoppingReviewJobId=null;reviewContractId=null;activeReviewJobId=null;$('#review-progress')?.remove();if(view==='review')renderPanel();}
 };
 const liveReviewRender=renderReview;
 renderReview=function(){liveReviewRender();const c=current();const bottom=$('.panel-bottom span');if(bottom)bottom.textContent=c.liveReview?`模型：${c.liveReview.model} · 依据待核验`:'尚未进行模型审查';};
@@ -1158,8 +1446,8 @@ function createOfficeBridge(meta,getEditorFrame){
  }
  window.addEventListener('message',receive);
  return {
-  run(action,data={}){
-   const task=tail.then(async()=>{await waitReady();if(disposed)throw Error('当前文档已关闭');const id=crypto.randomUUID();return new Promise((resolve,reject)=>{const timer=setTimeout(()=>{pending.delete(id);reject(Error('文档操作尚未返回，请先在编辑器中核对，避免重复修改'))},action==='download'?120000:45000);pending.set(id,{resolve,reject,timer});peer.postMessage({source:'dsh-onlyoffice-host',type:'command',channel:meta.channel,key:meta.key,id,action,operationId:id.replaceAll('-',''),...data},peerOrigin==='null'?'*':peerOrigin)})});
+  run(action,data={},options={}){
+   const task=tail.then(async()=>{if(options.signal?.aborted)throw new DOMException('定位已被后续操作取代','AbortError');await waitReady();if(options.signal?.aborted)throw new DOMException('定位已被后续操作取代','AbortError');if(disposed)throw Error('当前文档已关闭');const id=crypto.randomUUID();return new Promise((resolve,reject)=>{const timer=setTimeout(()=>{pending.delete(id);reject(Error('文档操作尚未返回，请先在编辑器中核对，避免重复修改'))},action==='download'?120000:45000);pending.set(id,{resolve,reject,timer});peer.postMessage({source:'dsh-onlyoffice-host',type:'command',channel:meta.channel,key:meta.key,id,action,operationId:id.replaceAll('-',''),...data},peerOrigin==='null'?'*':peerOrigin)})});
    tail=task.catch(()=>{});return task;
   },
   dispose(){disposed=true;readyReject(Error('文档已关闭'));for(const item of readyWaiters){clearTimeout(item.timer);item.reject(Error('文档已关闭'))}readyWaiters.clear();window.removeEventListener('message',receive);for(const item of pending.values()){clearTimeout(item.timer);item.reject(Error('文档已关闭'))}pending.clear();}
@@ -1197,7 +1485,7 @@ async function locateManualMatch(card,c,entry,advance=false){
 }
 function manualEntryForButton(button,key){
  const c=current();
- return button?.dataset.contractId===c.id?manualReviewEntries(c).find(({record})=>record.ruleId===button.dataset[key]):null;
+ return c&&button?.dataset.contractId===c.id?manualReviewEntries(c).find(({record})=>record.ruleId===button.dataset[key]):null;
 }
 document.addEventListener('click',event=>{
  const entry=manualEntryForButton(event.target.closest('[data-manual-basis]'),'manualBasis');
@@ -1372,7 +1660,7 @@ const summaryTasks=new Map();
 async function summaryJson(url,options){const response=await fetch(url,options);const raw=await response.text();let result;try{result=JSON.parse(raw)}catch{throw Error('摘要连接未返回JSON（HTTP '+response.status+'），请重试；若再次出现请检查桌面后台连接');}if(!response.ok)throw Error(result.error||'摘要任务请求失败');return result;}
 async function summaryRequest(payload,signal){let jobId;const cancel=()=>{if(jobId)void fetch('/api/contract-review-studio/summary-job?id='+encodeURIComponent(jobId),{method:'POST'}).catch(()=>{});};signal.addEventListener('abort',cancel,{once:true});try{const start=await summaryJson('/api/contract-review-studio/summary-start',{method:'POST',signal,headers:{'content-type':'application/json'},body:JSON.stringify(payload)});if(!start.jobId)throw Error('摘要后台没有返回任务编号');jobId=start.jobId;if(signal.aborted){cancel();throw Error('已取消本次摘要生成');}for(;;){const status=await summaryJson('/api/contract-review-studio/summary-job?id='+encodeURIComponent(jobId),{signal});if(status.state==='complete')return status.result;if(status.state==='failed')throw Error(status.error||'摘要生成失败');if(status.state==='cancelled')throw Error('已取消本次摘要生成');await new Promise((resolve,reject)=>{let timer;const stop=()=>{clearTimeout(timer);signal.removeEventListener('abort',stop);reject(Error('已取消本次摘要生成'));};if(signal.aborted)return stop();timer=setTimeout(()=>{signal.removeEventListener('abort',stop);resolve();},1000);signal.addEventListener('abort',stop,{once:true});});}}finally{signal.removeEventListener('abort',cancel);}}
 function summaryStatus(c){const task=summaryTasks.get(c.id);if(!task)return '';const seconds=Math.floor((Date.now()-task.started)/1000);return `<div class="clarity-card" role="status"><strong>${esc(task.error?'摘要未生成':task.stage)}</strong><p class="clarity-help">${task.error?esc(task.error):`已用时 ${seconds} 秒 · ${esc(task.model||'正在准备正文')}。读取正文最多等待2分钟，模型生成最多等待2分钟。`}</p>${task.running?'<button class="btn" id="summary-cancel">取消生成</button>':'<p class="clarity-help">可以重试，或从顶部“审查模型”切换模型。</p>'}</div>`;}
-renderSummary=function(){const c=current(),s=c.narrativeSummary,task=summaryTasks.get(c.id);$('#panel-body').innerHTML=`<div class="v2-tab-content"><div class="v2-row v2-between"><strong>这份合同约定了什么</strong><button class="btn soft" id="clarity-summary" ${task?.running?'disabled':''}>${task?.running?'正在生成…':s?'重新生成摘要':task?.error?'重试摘要':'生成摘要'}</button></div><div id="summary-status">${summaryStatus(c)}</div>${s?`<p class="clarity-help">${s.extractive?'原文摘录':'AI 摘要'} · ${esc(new Date(s.at).toLocaleString('zh-CN'))} · ${esc(s.source)}<br>生成后的修改不会自动更新摘要，请按需重新生成。</p><div class="clarity-text">${esc(s.text)}</div>`:task?.running?'<p class="clarity-help">结果返回后会自动显示在这里，关键要素可继续查看。</p>':'<div class="clarity-card"><p>开始分析合同后，这里会自动生成摘要。</p><p class="clarity-help">生成后会概述交易目的、各方义务、金额与履行安排、责任和争议解决，并列出需补充的信息。</p></div>'}<h4>关键要素</h4><dl class="info-list"><dt>合同</dt><dd>${esc(c.title)}</dd><dt>类型</dt><dd>${esc(c.type)}</dd><dt>我方</dt><dd>${esc((c.role==='甲方'?c.partyA:c.partyB)||'待核对')}</dd><dt>对方</dt><dd>${esc((c.role==='甲方'?c.partyB:c.partyA)||'待核对')}</dd><dt>提取金额</dt><dd>${esc(extract(c,'amount')||'未提取')}</dd><dt>关联编号</dt><dd>${esc(extract(c,'number')||'未提取')}</dd></dl><p class="clarity-help">关键要素来自现有提取记录，需结合原文核对。</p></div>`;$('#clarity-summary').onclick=generateNarrativeSummary;bindSummaryCancel(c);};
+renderSummary=function(){const c=current(),s=c.narrativeSummary,task=summaryTasks.get(c.id);$('#panel-body').innerHTML=`<div class="v2-tab-content"><div class="v2-row v2-between"><strong>这份合同约定了什么</strong><button class="btn soft" id="clarity-summary" ${task?.running?'disabled':''}>${task?.running?'正在生成…':s?'重新生成摘要':task?.error?'重试摘要':'生成摘要'}</button></div><div id="summary-status">${summaryStatus(c)}</div>${s?`<p class="clarity-help">${s.extractive?'原文摘录':'AI 摘要'} · ${esc(new Date(s.at).toLocaleString('zh-CN'))} · ${esc(s.source)}<br>生成后的修改不会自动更新摘要，请按需重新生成。</p><div class="clarity-text">${esc(s.text)}</div>`:task?.running?'<p class="clarity-help">结果返回后会自动显示在这里，关键要素可继续查看。</p>':'<div class="clarity-card"><p>点击“生成摘要”了解合同约定；风险审查在“风险意见”中发起。</p><p class="clarity-help">生成后会概述交易目的、各方义务、金额与履行安排、责任和争议解决，并列出需补充的信息。</p></div>'}<h4>关键要素</h4><dl class="info-list"><dt>合同</dt><dd>${esc(c.title)}</dd><dt>类型</dt><dd>${esc(c.type)}</dd><dt>我方</dt><dd>${esc((c.role==='甲方'?c.partyA:c.partyB)||'待核对')}</dd><dt>对方</dt><dd>${esc((c.role==='甲方'?c.partyB:c.partyA)||'待核对')}</dd><dt>提取金额</dt><dd>${esc(extract(c,'amount')||'未提取')}</dd><dt>关联编号</dt><dd>${esc(extract(c,'number')||'未提取')}</dd></dl><p class="clarity-help">关键要素来自现有提取记录，需结合原文核对。</p></div>`;$('#clarity-summary').onclick=generateNarrativeSummary;bindSummaryCancel(c);};
 function bindSummaryCancel(c){const b=$('#summary-cancel');if(b)b.onclick=()=>summaryTasks.get(c.id)?.controller.abort();}
 function summaryPaint(c){if(current().id!==c.id||panel!=='summary')return;const host=$('#summary-status');if(host){host.innerHTML=summaryStatus(c);bindSummaryCancel(c);}}
 async function summaryRead(promise,signal){let timer,abort;try{return await Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('读取编辑器正文超时，请等文档加载完成后重试')),120000);abort=()=>reject(Error('已取消本次摘要生成'));if(signal.aborted)abort();else signal.addEventListener('abort',abort,{once:true});})]);}finally{clearTimeout(timer);if(abort)signal.removeEventListener('abort',abort);}}
@@ -2389,76 +2677,474 @@ workbenchSettings=function(){
   main.querySelector('#office-service-save').onclick=()=>run('save');main.querySelector('#office-service-test').onclick=()=>run('test');main.querySelector('#office-service-reset').onclick=()=>run('reset');
  };
 };
-/* onboarding-demo-integration:v1 */
+/* onboarding-demo-integration:v2 */
 if(window.ContractReviewDemo){
  const demo=window.ContractReviewDemo;
- demo.add(data,sample,true);
+ if(demo.add(data,sample,true))save();
+ const decodeDemo=base64=>Uint8Array.from(atob(base64),char=>char.charCodeAt(0)).buffer;
+ async function migratedDemoBytes(c,base64){
+  const Zip=await docxLibrary(),archive=await Zip.loadAsync(decodeDemo(base64));
+  const doc=new DOMParser().parseFromString(await archive.file('word/document.xml').async('string'),'application/xml');
+  const ns='http://schemas.openxmlformats.org/wordprocessingml/2006/main',body=doc.getElementsByTagNameNS(ns,'body')[0];
+  if(!body||doc.getElementsByTagName('parsererror').length)throw Error('演示 Word 模板无法读取，原有记录未改变');
+  const section=body.getElementsByTagNameNS(ns,'sectPr')[0]?.cloneNode(true);body.replaceChildren();
+  function paragraph(text,style='Normal'){
+   const p=doc.createElementNS(ns,'w:p'),properties=doc.createElementNS(ns,'w:pPr'),kind=doc.createElementNS(ns,'w:pStyle');
+   kind.setAttributeNS(ns,'w:val',style);properties.append(kind);p.append(properties);
+   const run=doc.createElementNS(ns,'w:r'),t=doc.createElementNS(ns,'w:t');t.setAttributeNS('http://www.w3.org/XML/1998/namespace','xml:space','preserve');t.textContent=String(text??'');run.append(t);p.append(run);body.append(p);
+  }
+  paragraph(c.title,'Title');paragraph('虚构演示材料，不用于实际签约。此 Word 已保留升级前的演示修改；原有处理记录可在版本记录中查看。');
+  paragraph('甲方：'+c.partyA);paragraph('乙方：'+c.partyB);
+  c.clauses.forEach((cl,index)=>{paragraph(cl.title,'Heading1');paragraph(visibleText(c,index)??cl.text);});
+  paragraph('签署栏：本页为虚构演示，不填写真实签章信息。');if(section)body.append(section);
+  archive.file('word/document.xml',new XMLSerializer().serializeToString(doc));
+  return archive.generateAsync({type:'arraybuffer',compression:'DEFLATE'});
+ }
+ const demoAdapters={
+  decode:decodeDemo,migratedBytes:migratedDemoBytes,
+  isPresent:contract=>data.contracts.includes(contract),
+  async store(bytes,name){
+   const sha256=await versionDigest(bytes),id='sha256-'+sha256;
+   await originalStore('readwrite',store=>store.put({id,bytes,name,type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}));
+   return {id,name,sha256,size:bytes.byteLength};
+  },
+  async session(bytes,name){
+   let binary='';const raw=new Uint8Array(bytes);for(let i=0;i<raw.length;i+=8192)binary+=String.fromCharCode(...raw.subarray(i,i+8192));
+   const response=await fetch('/api/contract-review-studio/onlyoffice/session',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name,base64:btoa(binary),clientOrigin:location.protocol==='dsh-desktop:'&&location.hostname==='harness'?'dsh-desktop://harness':location.origin})});
+   const session=await response.json();if(!response.ok)throw Error(session.error||'演示 Word 创建失败，原有记录未改变');
+   return {fileId:session.fileId,key:session.config?.document?.key};
+  },
+  async persist(){if(!await saveDurably())throw Error('演示 Word 已准备，但工作台记录保存失败，请重试保存。');}
+ };
+ function demoNotice(c){
+  const host=document.querySelector('.document-side');if(!host||host.querySelector('[data-demo-word-note]'))return;
+  const note=document.createElement('div');note.className='v2-note';note.dataset.demoWordNote='';note.setAttribute('role','note');
+  note.innerHTML='<strong>演示合同 · 虚构材料</strong><br>左侧为可编辑 Word，定位、应用修改、保存和导出使用正常合同流程。'+(!c.liveReview?'当前六条风险为预设演示关注点，非模型审查或法律结论。':'')+(c.onboardingWordMigrated?' 此前演示修改已保留为 Word 正文，升级前记录仍在版本记录中。':'');
+  host.prepend(note);
+ }
  const demoBaseRisk=riskHTML;
  riskHTML=function(c,r){
-  if(!c.onboardingDemo)return demoBaseRisk(c,r);
-  const d=c.decisions[r.id]||{status:'open'},active=selected===r.id;
-  return `<article class="risk-card ${active?'active':''}"><button class="risk-heading" data-action="select-risk" data-id="${esc(r.id)}" aria-expanded="${active}"><span class="risk-num">${c.risks.indexOf(r)+1}</span><span class="risk-title">${esc(r.title)}</span>${badge(r,c)}</button>${active?`<div class="risk-detail"><div class="risk-label">原文 <button class="text-link" data-demo-locate="${r.clause}">定位原文</button></div><div class="quote">${esc(r.quote)}</div><div class="risk-label">为什么要改</div><p class="explanation">${esc(r.why)}</p><div class="suggestion"><div class="risk-label">${d.status==='accepted'?'已采纳的写法':'修改建议'}</div><p>${esc(d.text||r.suggestion)}</p></div><div class="risk-actions">${d.status==='accepted'||d.status==='kept'?`<button class="btn soft" data-action="undo" data-id="${esc(r.id)}">撤回处理</button>`:`<button class="btn primary" data-v2="wps-insert" data-id="${esc(r.id)}">采纳修改（演示）</button><button class="btn" data-action="keep" data-id="${esc(r.id)}">保留原文</button>`}</div><div class="risk-footer">预设演示关注点 · 非法律结论</div></div>`:''}</article>`;
+  let html=demoBaseRisk(c,r);
+  if(c.onboardingWordMigrated&&c.decisions[r.id]?.wpsWritten&&!wpsEdits.has(c.id+':'+r.id))html=html.replace('disabled title="请在Word审阅中处理此修订"','disabled title="此前演示修改已合入 Word 正文，可直接编辑或查看升级前版本"').replace('请在Word审阅中撤销','已保留为 Word 正文');
+  return c.onboardingDemo&&!c.liveReview?html.replace(/<div class="risk-footer">[\s\S]*?<\/div>/,'<div class="risk-footer"><span>预设演示关注点 · 非模型审查或法律结论</span></div>'):html;
  };
- const demoBaseReview=renderReview;
+ const demoBaseReview=renderReview;let demoPaintGeneration=0;
  renderReview=function(){
-  const c=current();
-  if(!c?.onboardingDemo)return demoBaseReview();
+  const generation=++demoPaintGeneration,c=current();
+  if(!c?.onboardingDemo||!demo.needsWord(c)){const result=demoBaseReview();if(c?.onboardingDemo)demoNotice(c);return result;}
+  // Draw a waiting state before the ordinary review opens the editor.
   old.review();
-  const notice=document.createElement('div');notice.className='v2-note';notice.setAttribute('role','note');
-  notice.innerHTML='<strong>演示合同 · 虚构材料与预设风险</strong><br>① 点风险查看原文 → ② 采纳修改 → ③ 查看左侧增删 → ④ 撤回或导出演示 Word。此演示不调用模型或在线 Word 服务。';
-  document.querySelector('.document-side')?.prepend(notice);
-  const meta=document.querySelector('.paper-meta');if(meta)meta.textContent='虚构演示材料 · 不用于实际签约';
-  document.querySelectorAll('[data-v2="wps-insert"]').forEach(b=>{b.disabled=false;b.textContent='采纳修改（演示）';});
-  const bottom=document.querySelector('.panel-bottom span');if(bottom)bottom.textContent='预设演示风险 · 非模型审查结果';
-  document.querySelector('[data-action="versions"]')?.setAttribute('data-demo-history','');
+  const pane=document.querySelector('.document-scroll');if(!pane)return;
+  pane.innerHTML='<div style="padding:24px" role="status">正在准备自带的演示 Word…</div>';
+  document.querySelectorAll('[data-v2="wps-insert"],[data-v2="wps-undo"]').forEach(button=>button.disabled=true);
+  const live=()=>generation===demoPaintGeneration&&view==='review'&&current()?.id===c.id&&pane.isConnected;
+  demo.prepare(c,demoAdapters).then(()=>{if(live()){demoBaseReview();demoNotice(c);}}).catch(error=>{
+   if(!live())return;
+   pane.innerHTML='<div style="padding:24px" role="alert"><strong>演示 Word 尚未打开</strong><p>'+esc(error.message)+'</p><button class="btn" data-demo-word-retry>重试准备演示 Word</button></div>';
+   pane.querySelector('[data-demo-word-retry]').onclick=()=>renderReview();
+  });
+ };
+ const demoProjectDetails=renderProject;
+ renderProject=function(){
+  demoProjectDetails();const project=proj();
+  if(project?.id===demo.projectId&&project.onboardingDemo){
+   // Preset risks are already available; opening the bundled contract should not start a model job.
+   const open=document.querySelector('[data-v2="elements"][data-id="'+demo.contractId+'"],[data-v2="open-doc"][data-id="'+demo.contractId+'"]');
+   if(open){open.dataset.v2='open-doc';open.textContent='打开审查';}
+  }
  };
  const demoBaseShell=shell;
  shell=function(){
   demoBaseShell();
-  if(view!=='projects')return;
-  const intro=document.querySelector('#project-intro');if(!intro)return;
-  const button=document.createElement('button');button.className='btn soft';button.dataset.demoOpen='true';
-  button.textContent=data.v2.projects.some(p=>p.id===demo.projectId)?'打开演示项目 →':'添加演示项目 →';
-  intro.prepend(button,document.createTextNode(' '));
+  if(view==='projects')document.querySelectorAll('#onboarding-demo,[data-demo-open]').forEach(button=>button.remove());
  };
- window.addEventListener('click',event=>{
-  const button=event.target.closest('button');if(!button)return;
-  if(button.dataset.demoOpen){
-   event.preventDefault();event.stopImmediatePropagation();
-   const project=demo.add(data,sample);if(!project){toast('无法添加演示项目，已有材料未改变');return;}
-   save();openDoc(demo.contractId);return;
-  }
-  const c=current();if(!c?.onboardingDemo)return;
-  if(button.dataset.demoLocate!==undefined){event.preventDefault();event.stopImmediatePropagation();document.querySelectorAll('.clause')[Number(button.dataset.demoLocate)]?.scrollIntoView({block:'center',behavior:'smooth'});return;}
-  const a=button.dataset.action,v=button.dataset.v2,id=button.dataset.id;
-  if(['run-project','run-selected','run-current'].includes(v)){
-   event.preventDefault();event.stopImmediatePropagation();openDoc(c.id);toast('演示使用预设风险，不会发起模型审查');return;
-  }
-  if(v==='wps-insert'||v==='wps-undo'||['accept','keep','undo'].includes(a)){
-   event.preventDefault();event.stopImmediatePropagation();
-   demo.decide(c,id,v==='wps-insert'||a==='accept'?'accepted':a==='keep'?'kept':'open',c.decisions[id]?.text);
-   save();renderReview();toast('演示修改已保存到本机');return;
-  }
-  if(a==='export'||button.dataset.demoExport){
-   event.preventDefault();event.stopImmediatePropagation();
-   if(button.dataset.demoExport){download(old.docx(true),'演示合同（虚构·带修改）.docx');return;}
-   modal('导出演示合同','<p class="modal-sub">导出当前演示修改，Word 文件带有“虚构示例”说明。无需配置在线编辑服务。</p>','<button class="btn primary" data-demo-export="true">下载演示 Word</button>'+action('close','关闭'));return;
-  }
-  if(a==='save-version'){
-   event.preventDefault();event.stopImmediatePropagation();
-   c.versions.push({id:uid('demo-version'),name:'演示修改 · '+now(),time:now(),clauses:clone(c.clauses),decisions:clone(c.decisions),overrides:clone(c.overrides)});save();toast('演示版本已保存（正文与处理记录）');return;
-  }
-  if(a==='versions'){
-   event.preventDefault();event.stopImmediatePropagation();
-   modal('演示版本记录',c.versions.map(v=>'<section class="compare-section"><strong>'+esc(v.name)+'</strong><p>'+esc(v.time)+' · '+Object.values(v.decisions||{}).filter(d=>d.status==='accepted').length+' 项采纳修改</p></section>').join(''),action('close','关闭'));return;
-  }
-  if(a==='ask-risk'||a==='send-chat'||a==='prompt'){
-   event.preventDefault();event.stopImmediatePropagation();
-   modal('演示风险说明','<p class="modal-sub">这些风险和建议是预设示例。真实 AI 审查与问答需要配置模型服务，并由你确认后发起。</p>',action('close','知道了'));return;
-  }
- },true);
 }
-/* /onboarding-demo-integration:v1 */
+/* /onboarding-demo-integration:v2 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* review-locate-integration:v1 — insert inside the workbench closure after its original functions. */
+let reviewLocateController=null;
+function cancelReviewLocate(){
+ locatingIssue++;
+ reviewLocateController?.abort();
+ reviewLocateController=null;
+}
+function beginReviewLocate(contract){
+ cancelReviewLocate();
+ const controller=new AbortController();
+ reviewLocateController=controller;
+ const request=locatingIssue;
+ return {signal:controller.signal,current:()=>!controller.signal.aborted&&request===locatingIssue&&current()===contract&&view==='review'};
+}
+async function reviewLocateBridge(contract,request){
+ const deadline=Date.now()+25000;
+ while(request.current()){
+  if(activeOfficeId===contract.id&&onlyOfficeBridge&&officeStates.get(contract.id)?.phase==='ready')return onlyOfficeBridge;
+  if(officeStates.get(contract.id)?.phase!=='opening'||Date.now()>=deadline)break;
+  await new Promise(resolve=>setTimeout(resolve,150));
+ }
+ if(!request.current())return null;
+ if(activeOfficeId===contract.id&&onlyOfficeBridge)return onlyOfficeBridge;
+ return null;
+}
+function reviewLocateMessage(result){
+ return '已定位'+(result.count>1?'第 '+(result.occurrenceIndex+1)+' / '+result.count+' 处':'原文')+
+  (result.viewport?.page?' · 第 '+result.viewport.page+' 页':'')+' · 查看 Word 中的蓝色选区';
+}
+function reviewLocatePulse(explicit){
+ const mount=document.querySelector('#wps-mount');
+ if(mount?.animate&&!matchMedia('(prefers-reduced-motion: reduce)').matches)mount.animate([{boxShadow:'inset 0 0 0 3px #2563eb'},{boxShadow:'inset 0 0 0 3px transparent'}],{duration:1600});
+ if(explicit){try{onlyOfficeInstance?.getFrame()?.contentWindow.focus();}catch{}}
+}
+function riskLocateFeedback(id,message,hasNext=false){
+ const card=document.getElementById('risk-'+id);if(!card)return;
+ let status=card.querySelector('[data-risk-position]');
+ if(!status){status=document.createElement('div');status.dataset.riskPosition='';status.className='risk-footer';status.setAttribute('role','status');status.setAttribute('aria-live','polite');card.append(status);}
+ status.textContent=message;
+ const next=card.querySelector('[data-next-risk]');if(next){next.hidden=!hasNext;next.disabled=!hasNext;}
+}
+locateWpsIssue=async function(c,r,explicit){
+ if(!r||(!explicit&&['accepted','kept'].includes(decision(c,r).status)))return;
+ const request=beginReviewLocate(c),original=riskWritePlan(c,r)?.original||r.quote||c.clauses[r.clause]?.text;
+ const quote=decision(c,r).wpsWritten?decision(c,r).text:original;
+ if(!quote){riskLocateFeedback(r.id,'暂无可定位的原文，请核对合同或重新审查');return;}
+ riskLocateFeedback(r.id,'正在定位原文…');
+ try{
+  const bridge=await reviewLocateBridge(c,request);if(!request.current())return;
+  if(bridge){
+   const {count}=await bridge.run('count',{candidates:[quote]},{signal:request.signal});
+   if(!request.current()||bridge!==onlyOfficeBridge)return;
+   if(!count){riskMatchPositions.delete(r);throw Error('当前 Word 未找到这段原文，正文可能已变化，请核对版本或重新审查');}
+   const previous=riskMatchPositions.get(r),index=explicit==='next'&&previous?.bridge===bridge?(previous.nextIndex??previous.occurrenceIndex+1):0;
+   if(index>=count){riskLocateFeedback(r.id,'已到最后一处，点击“定位原文”可从第一处查看');return;}
+   const position=await bridge.run('locate',{candidates:[quote],occurrenceIndex:index},{signal:request.signal});
+   if(!request.current()||bridge!==onlyOfficeBridge)return;
+   riskMatchPositions.set(r,{...position,bridge});
+   riskLocateFeedback(r.id,reviewLocateMessage(position),index+1<count);
+   reviewLocatePulse(explicit);return position;
+  }
+  if(wpsContractId===c.id&&wpsActiveInstance){
+   const anchor=await findWpsAnchor(wpsActiveInstance,quote);if(!request.current())return;
+   await anchor.doc.Range.SetRange(anchor.start,anchor.end);if(!request.current())return;
+   riskLocateFeedback(r.id,'已定位原文 · 查看 Word 中的选区');return;
+  }
+  const local=document.querySelector('#clause-'+r.clause);
+  if(local){locate(r.clause);riskLocateFeedback(r.id,'已定位原件预览中的条款');return;}
+  throw Error('Word 编辑器尚未就绪，请等待文档打开后重试定位');
+ }catch(error){
+  if(error.name==='AbortError'||!request.current())return;
+  riskLocateFeedback(r.id,error.message||'定位失败，请点击“定位原文”重试');
+  if(explicit)toast(error.message||'定位失败，请重试');
+ }
+};
+locateManualMatch=async function(card,c,entry,advance=false){
+ const request=beginReviewLocate(c);
+ const quote=entry.issue?.draftOperation==='append'?entry.issue.quote:manualDraftOriginal(entry.record,entry.issue);
+ if(!quote){manualMatchFeedback(card,'此意见没有可定位的原文，请在 Word 中核对补充位置。',false);return null;}
+ manualMatchFeedback(card,'正在定位原文…',false);
+ try{
+  const bridge=await reviewLocateBridge(c,request);if(!request.current())return null;
+  if(!bridge){manualMatchFeedback(card,'Word 编辑器尚未就绪，请等待文档打开后重试定位。',false);return null;}
+  const previous=manualMatchPositions.get(entry.record);
+  const index=advance&&previous?.bridge===bridge?(previous.nextIndex??previous.occurrenceIndex+1):0;
+  const {count}=await bridge.run('count',{candidates:[quote]},{signal:request.signal});
+  if(!request.current()||bridge!==onlyOfficeBridge)return null;
+  if(!count){manualMatchPositions.delete(entry.record);card.dataset.stale='true';manualMatchFeedback(card,'原文已变化或已被修改：此意见待复查，请勿直接套用旧建议。',false);return null;}
+  delete card.dataset.stale;
+  if(index>=count){manualMatchFeedback(card,'已到最后一处，点击“定位原文”可从第一处查看。',false);return null;}
+  const located=await bridge.run('locate',{candidates:[quote],occurrenceIndex:index},{signal:request.signal});
+  if(!request.current()||bridge!==onlyOfficeBridge)return null;
+  const position={...located,bridge,original:quote};manualMatchPositions.set(entry.record,position);
+  manualMatchFeedback(card,reviewLocateMessage(position),position.occurrenceIndex+1<position.count);
+  reviewLocatePulse(true);return position;
+ }catch(error){
+  if(error.name==='AbortError'||!request.current())return null;
+  manualMatchFeedback(card,error.message||'定位失败，请点击“定位原文”重试。',false);throw error;
+ }
+};
+
+/* risk-card-collapse:v1 */
+// Keep each opinion's expansion state separate from the selected document anchor.
+// The editor and decision records are never recreated by a disclosure toggle.
+const reviewCardExpansion = new Map();
+function reviewCardKey(card,contract=current()){
+ const id=card.id?.startsWith('risk-')?card.id.slice(5):card.querySelector('[data-action="select-risk"]')?.dataset.id||card.querySelector('[data-apply-manual-draft]')?.dataset.applyManualDraft||card.querySelector('[data-locate-manual-match]')?.dataset.locateManualMatch;
+ return id&&contract?contract.id+':'+id:null;
+}
+function reviewCardHeading(card){return [...card.children].find(child=>child.matches('.risk-heading'));}
+function syncReviewCardExpansion(){
+ const contract=current();if(!contract)return;
+ for(const card of document.querySelectorAll('#panel-body .risk-card')){
+  const key=reviewCardKey(card,contract),heading=reviewCardHeading(card);if(!key||!heading)continue;
+  const remembered=reviewCardExpansion.get(key);
+  if(card.tagName==='DETAILS'){
+   if(remembered!==undefined&&card.open!==remembered){
+    // This re-render is restoring a disclosure, not a new request to locate text.
+    card.dataset.groupedRiskOpening='true';card.open=remembered;
+   }
+   heading.setAttribute('aria-expanded',String(card.open));continue;
+  }
+  let detail=[...card.children].find(child=>child.classList.contains('risk-detail'));
+  const open=remembered??!!detail;
+  if(open&&!detail){
+   const id=heading.dataset.id,risk=contract.risks.find(item=>item.id===id);
+   if(risk){
+    const previous=selected;
+    try{
+     selected=id;const box=document.createElement('div');box.innerHTML=riskHTML(contract,risk);
+     detail=box.querySelector('.risk-detail');if(detail)card.append(detail);
+    }finally{selected=previous;}
+   }
+  }
+  if(detail)detail.hidden=!open;
+  for(const child of card.children)if(child!==heading&&child!==detail)child.hidden=!open;
+  card.classList.toggle('active',open);heading.setAttribute('aria-expanded',String(open));
+ }
+}
+const expansionRenderRisks=renderRisks;
+renderRisks=function(){expansionRenderRisks();syncReviewCardExpansion();};
+window.addEventListener('click',event=>{
+ const manualHeading=event.target.closest('details.risk-card > summary.risk-heading');
+ if(manualHeading){
+  const card=manualHeading.parentElement,key=reviewCardKey(card);
+  if(key)reviewCardExpansion.set(key,!card.open);
+  if(card.open&&typeof cancelReviewLocate==='function')cancelReviewLocate();
+  return;
+ }
+ const heading=event.target.closest('.risk-card > .risk-heading[data-action="select-risk"]');
+ if(!heading)return;
+ const card=heading.closest('.risk-card'),contract=current(),id=heading.dataset.id;
+ const risk=contract?.risks.find(item=>item.id===id);if(!risk)return;
+ event.preventDefault();event.stopImmediatePropagation();
+ const open=heading.getAttribute('aria-expanded')!=='true';
+ reviewCardExpansion.set(reviewCardKey(card,contract),open);
+ if(open){
+  selected=id;panel='risks';
+  const host=document.querySelector('#panel-body'),scrollTop=host?.scrollTop;
+  renderRisks();if(host&&Number.isFinite(scrollTop))host.scrollTop=scrollTop;
+  if(typeof locateWpsIssue==='function')void locateWpsIssue(contract,risk,false);
+  if(!onlyOfficeBridge&&!wpsActiveInstance)locate(risk.clause);
+ }else{
+  if(selected===id)selected=null;
+  if(typeof cancelReviewLocate==='function')cancelReviewLocate();
+  syncReviewCardExpansion();
+ }
+ const next=[...document.querySelectorAll('#panel-body .risk-card')].find(item=>reviewCardKey(item,contract)===contract.id+':'+id);
+ reviewCardHeading(next||card)?.focus({preventScroll:true});
+},true);
+window.addEventListener('toggle',event=>{
+ const card=event.target;if(!card.isConnected||!card.matches?.('details.risk-card'))return;
+ const key=reviewCardKey(card);if(!key)return;
+ reviewCardExpansion.set(key,card.open);
+ reviewCardHeading(card)?.setAttribute('aria-expanded',String(card.open));
+ if(!card.open&&typeof cancelReviewLocate==='function')cancelReviewLocate();
+},true);
+// Keyboard navigation and "jump to opinion" always open their target, while a
+// direct click on the same opinion is allowed to close it.
+activateReviewOpinion=function(card){
+ if(!card)return;
+ const number=reviewOpinionNumber(card),key=groupedRiskLeafKey(card),contract=current();
+ if(card.tagName==='DETAILS'){
+  const wasOpen=card.open;reviewCardExpansion.set(reviewCardKey(card,contract),true);card.open=true;
+  if(wasOpen)card.querySelector('[data-locate-manual-match]')?.click();
+ }else{
+  const heading=reviewCardHeading(card);
+  if(heading?.getAttribute('aria-expanded')!=='true')heading?.click();
+  else{
+   const risk=contract.risks.find(item=>item.id===heading.dataset.id);
+   if(risk&&typeof locateWpsIssue==='function')void locateWpsIssue(contract,risk,false);
+  }
+ }
+ const cards=[...document.querySelectorAll('.risk-card')];
+ const next=cards.find(item=>groupedRiskLeafKey(item)===key)||cards.find(item=>reviewOpinionNumber(item)===number);if(!next)return;
+ keyboardRiskIndex=cards.indexOf(next);
+ const group=next.closest('.risk-group-card'),locations=group?.querySelector('.risk-group-locations');
+ if(locations?.hidden){locations.hidden=false;group.querySelector('.risk-group-heading').setAttribute('aria-expanded','true');groupedRiskOpenState.set(group.dataset.groupedRiskKey,true);}
+ if(number===1)document.querySelector('#panel-body').scrollTop=0;else next.scrollIntoView({block:'center'});
+};
+const disclosureStyle=document.createElement('style');disclosureStyle.id='risk-card-disclosure-style';
+disclosureStyle.textContent='.risk-card>.risk-detail[hidden],.risk-card>[hidden]{display:none!important}.risk-card>.risk-heading:focus-visible{outline:2px solid #617d94;outline-offset:-3px}.risk-card>.risk-heading[aria-expanded="false"]>svg{transform:none}.risk-card>.risk-heading[aria-expanded="true"]>svg{transform:rotate(180deg)}';
+document.head.append(disclosureStyle);
+/* /risk-card-collapse:v1 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* review-flow-integration:v1 */
+function fieldReviewRows(project, contracts=docs(project).filter(c=>c.kind!=='aux')) {
+ const ids=new Set(contracts.map(c=>c.id));
+ return fields(project).flatMap(field=>field.values.filter(value=>ids.has(value.c.id)).map(value=>({...value,key:field.key,label:field.label,recordKey:value.c.id+':'+field.key})));
+}
+function selectedElementContract(project) {
+ return docs(project).find(c=>c.id===current()?.id&&c.kind!=='aux')||preferredContract(project);
+}
+function rememberOriginalField(project,contract,key){
+ project.fieldOriginalValues||={};const recordKey=contract.id+':'+key;
+ if(!Object.hasOwn(project.fieldOriginalValues,recordKey))project.fieldOriginalValues[recordKey]=project.fields?.[recordKey]?.originalValue??extract(contract,key);
+ return project.fieldOriginalValues[recordKey];
+}
+function updateFieldReviewHeader() {
+ const p=proj(),rows=fieldReviewRows(p),target=selectedElementContract(p),pending=rows.filter(row=>row.c.id===target?.id&&!row.confirmed).length;
+ const count=document.querySelector('[data-field-review-count]');
+ if(count)count.textContent='已核对 '+rows.filter(row=>row.confirmed).length+' / '+rows.length+' 项 · '+docs(p).filter(c=>c.kind!=='aux').length+' 份合同';
+ const start=document.querySelector('[data-field-review-start]');
+ if(start){start.disabled=!target||pending>0||liveBusy;start.textContent=liveBusy?'正在审查中…':pending?'还有 '+pending+' 项待核对':'开始审查';}
+ const all=document.querySelector('[data-field-review-all]');if(all)all.disabled=!rows.some(row=>!row.confirmed&&!p.fieldCorrections?.[row.recordKey]);
+ const clear=document.querySelector('[data-field-review-clear]');if(clear)clear.hidden=!rows.some(row=>row.confirmed);
+}
+function fieldReviewCellHTML(project,field,value){
+ const key=value.c.id+':'+field.key,rejected=!!project.fieldCorrections?.[key];
+ const original=project.fieldOriginalValues?.[key]??project.fields?.[key]?.originalValue??value.original??'';
+ const changed=project.fields?.[key]&&String(value.value??'')!==String(original);
+ const status=value.confirmed?(value.value?'已核对':'已核对 · 原文未载明'):rejected?'请更正后再次确认':'待核对';
+ return `<td data-field-review-cell data-contract="${esc(value.c.id)}" data-key="${esc(field.key)}"><input aria-label="${esc(field.label+' · '+value.c.title)}" data-inline-contract="${esc(value.c.id)}" data-inline-key="${esc(field.key)}" value="${esc(value.value||'')}" placeholder="未提取，请补充；原文未载明可直接确认"><div class="field-review-actions"><div class="field-review-choices" role="group" aria-label="${esc(field.label+'的核对状态')}"><button type="button" data-field-review="yes" aria-pressed="${value.confirmed}" title="${value.confirmed?'再次点击取消确认':value.value?'确认已核对':'确认原文未载明'}" class="${value.confirmed?'is-confirmed':''}">✓ 已核对</button><button type="button" data-field-review="no" aria-pressed="${rejected}" title="${rejected?'再次点击取消更正标记':'标记需要更正'}" class="${rejected?'needs-correction':''}">✕ 需更正</button></div><button type="button" class="field-review-source" data-v2="field" data-id="${esc(value.c.id)}" data-key="${esc(field.key)}">查看原文</button><span class="field-review-state" role="status">${status}</span></div>${changed?'<small class="v2-sub field-review-original">原提取值 '+esc(original||'未提取')+'</small>':''}</td>`;
+}
+renderElements=function(){
+ const p=proj(),fs=fields(p),ds=docs(p).filter(c=>c.kind!=='aux');
+ const rows=fieldReviewRows(p),confirmed=rows.filter(row=>row.confirmed).length,canConfirm=rows.some(row=>!row.confirmed&&!p.fieldCorrections?.[row.recordKey]);
+ $('#content').innerHTML=`<section class="v2-page element-review-page">${header('逐项核对合同要素','对照原文，选择“已核对”或“需更正”；再次点击可取消。','<button type="button" class="btn primary" data-v2="run-selected" data-field-review-start disabled>开始审查</button>')}<div class="v2-project-banner"><div><strong>${esc(p.name)}</strong><p data-field-review-count></p><p class="v2-sub">核对完成后开始审查当前合同。原文未载明的字段也请明确确认。</p></div><div class="v2-actions"><div class="field-review-bulk"><button type="button" class="btn soft" data-field-review-all ${canConfirm?'':'disabled'}>全部确认</button>${confirmed?'<button type="button" class="btn ghost" data-field-review-clear>取消全部确认</button>':''}</div>${action('csv','导出核对表')}</div></div><div class="v2-table-wrap"><table class="v2-table"><thead><tr><th>核对字段</th>${ds.map(c=>`<th>${esc(c.title)}</th>`).join('')}<th>核对提示</th></tr></thead><tbody>${fs.map(f=>{
+ const vals=f.values.map(v=>v.value),conflict=f.key==='amount'&&ds.some(c=>c.kind==='loan')&&ds.some(c=>c.kind==='guarantee')&&new Set(vals.filter(Boolean)).size>1;
+ return `<tr class="${conflict?'conflict':''}"><td>${esc(f.label)}</td>${f.values.map(v=>fieldReviewCellHTML(p,f,v)).join('')}<td>${conflict?tag('同一借款金额不一致','red'):f.key==='partyB'?'<span class="v2-sub">各文件相对方可以不同</span>':f.key==='number'?'<span class="v2-sub">仅比较明确关联的编号</span>':'<span class="v2-sub">请结合原文确认</span>'}</td></tr>`;
+ }).join('')}</tbody></table></div><p class="v2-note">“全部确认”包括原文未载明的字段；标为“需更正”的项须先修改再确认。再次点击单项状态或“取消全部确认”可取消，已填写的核对值保留。合同正文须在 Word 中修改。</p></section>`;
+ updateFieldReviewHeader();
+};
+window.addEventListener('click',event=>{
+ const button=event.target.closest('button');if(!button)return;
+ if(button.dataset.v2==='save-config'){
+  const contract=data.contracts.find(c=>c.id===button.dataset.id),project=contract&&cProject(contract);
+  if(project)for(const key of ['partyA','partyB'])rememberOriginalField(project,contract,key);
+ }
+ if(button.dataset.v2==='save-field'&&document.querySelector('#v2-field-value')?.value.trim()){
+  const p=proj(),key=button.dataset.id+':'+button.dataset.key;
+  const contract=data.contracts.find(c=>c.id===button.dataset.id);if(contract)rememberOriginalField(p,contract,button.dataset.key);
+  if(p.fieldCorrections)delete p.fieldCorrections[key];
+ }
+ if(button.hasAttribute('data-field-review-all')){
+  event.preventDefault();event.stopImmediatePropagation();const p=proj();p.confirmed||={};
+  fieldReviewRows(p).forEach(row=>{if(!p.fieldCorrections?.[row.recordKey])p.confirmed[row.recordKey]=true;});
+  save();renderElements();toast(Object.values(p.fieldCorrections||{}).some(Boolean)?'其余要素已确认；请先更正标记的字段':'所有要素已确认，可以开始审查');return;
+ }
+ if(button.hasAttribute('data-field-review-clear')){
+  event.preventDefault();event.stopImmediatePropagation();const p=proj();
+  fieldReviewRows(p).forEach(row=>{if(p.confirmed)delete p.confirmed[row.recordKey];});
+  save();renderElements();toast('已取消全部确认，填写的核对值已保留');return;
+ }
+ if(button.dataset.fieldReview){
+  event.preventDefault();event.stopImmediatePropagation();const cell=button.closest('[data-field-review-cell]'),p=proj(),key=cell.dataset.contract+':'+cell.dataset.key;
+  p.confirmed||={};p.fieldCorrections||={};
+  if(button.dataset.fieldReview==='yes'){if(p.confirmed[key])delete p.confirmed[key];else p.confirmed[key]=true;delete p.fieldCorrections[key];}
+  else{delete p.confirmed[key];if(p.fieldCorrections[key])delete p.fieldCorrections[key];else p.fieldCorrections[key]=true;}
+  save();renderElements();
+  if(button.dataset.fieldReview==='no'&&p.fieldCorrections[key])document.querySelectorAll('[data-field-review-cell]').forEach(next=>{if(next.dataset.contract+':'+next.dataset.key===key)next.querySelector('input').focus();});
+ }
+},true);
+function recordElementEdit(event){
+ const input=event.target.closest('input[data-inline-contract]');if(!input||view!=='elements')return;
+ event.stopImmediatePropagation();const p=proj(),key=input.dataset.inlineContract+':'+input.dataset.inlineKey,c=data.contracts.find(c=>c.id===input.dataset.inlineContract);
+ p.fields||={};p.confirmed||={};const originalValue=rememberOriginalField(p,c,input.dataset.inlineKey);p.fields[key]={value:input.value.trim(),originalValue,time:now()};delete p.confirmed[key];
+ if(['partyA','partyB'].includes(input.dataset.inlineKey)&&c)c[input.dataset.inlineKey]=input.value.trim();
+ const cell=input.closest('[data-field-review-cell]');cell.querySelector('[data-field-review="yes"]')?.setAttribute('aria-pressed','false');cell.querySelector('[data-field-review="yes"]')?.classList.remove('is-confirmed');
+ const status=cell.querySelector('.field-review-state');if(status)status.textContent='已修改，请再次核对';
+ updateFieldReviewHeader();if(event.type==='change')save();
+}
+window.addEventListener('input',recordElementEdit,true);
+window.addEventListener('change',recordElementEdit,true);
+const fieldCheckedRun=doRun;
+doRun=async function(project=false){
+ if(liveBusy)return fieldCheckedRun(project);
+ const c=current(),p=project?proj():cProject(c),targets=(project?docs(p):[c]).filter(c=>c.kind!=='aux');
+ const missing=fieldReviewRows(p,targets).filter(row=>!row.confirmed);
+ if(missing.length){activeProject=p.id;view='elements';shell();toast('请先核对这份合同的 '+missing.length+' 个要素；也可使用“全部确认”');return;}
+ return fieldCheckedRun(project);
+};
+function paintReviewTaskEmpty(){
+ if(view!=='review'||panel!=='risks')return;
+ const c=current(),running=liveBusy&&reviewContractId===c.id;
+ document.querySelectorAll('.panel [data-v2="run-current"]').forEach(button=>{button.disabled=running;if(button.closest('.panel-bottom'))button.textContent=running?'正在审查中…':c.lastRun?'重新审查':'开始审查';});
+ if(c.kind==='aux'||c.risks.length||manualReviewEntries(c).length)return;
+ const list=document.querySelector('.risk-list');if(!list)return;
+ const state=c.reviewTaskResult;
+ if(running){list.innerHTML='<div class="empty review-task-empty" role="status" aria-live="polite"><span class="review-task-spinner" aria-hidden="true"></span><strong>正在审查中…</strong><p>结果返回后会自动显示在这里，请稍候。</p></div>';return;}
+ const failed=state&&['failed','cancelled','running'].includes(state.state);
+ list.innerHTML=`<div class="empty review-task-empty" role="status"><strong>${failed?(state.state==='failed'?'本次审查未完成':state.state==='running'?'上次审查已中断':'审查已停止'):c.lastRun?'本轮审查已完成':'尚未开始审查'}</strong><p>${failed?esc(state.error||'已有正文与审查记录已保留，可重新发起审查。'):c.lastRun?'本次未生成风险意见，请结合审查执行记录与原文核对。':'先核对合同要素，再选择立场和审查范围。'}</p>${action('run-current',failed?'重新审查':c.lastRun?'重新审查':'开始审查','','primary')}</div>`;
+}
+const taskStateRisks=renderRisks;renderRisks=function(){taskStateRisks();paintReviewTaskEmpty();};
+const taskStateProgress=reviewProgress;reviewProgress=function(progress){taskStateProgress(progress);paintReviewTaskEmpty();};
+/* /review-flow-integration:v1 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* project-deletion-integration:v1 */
+function deleteReviewProject(id){
+ if(liveBusy||manualRevisionPending||savedDraftPreparation){toast('合同正在处理中，请先停止或等待完成');return;}
+ const project=st().projects.find(item=>item.id===id);if(!project)return;
+ modal('删除项目','<p>删除“'+esc(project.name)+'”及其项目资料？</p><p class="modal-sub">项目、审查记录和版本将保留在本地回收记录中，原始文件保留；其他项目仍在使用的合同也会保留。</p>','<button class="btn" data-action="close">取消</button><button class="btn primary" id="confirm-remove-project">确认删除</button>');
+ document.querySelector('#confirm-remove-project').onclick=async()=>{
+  const button=document.querySelector('#confirm-remove-project');if(!button||button.disabled)return;
+  if(liveBusy||manualRevisionPending||savedDraftPreparation){toast('合同正在处理中，请先停止或等待完成');return;}
+  if(st().projects.find(item=>item.id===id)!==project){close();toast('项目记录已变化，请重新选择');return;}
+  button.disabled=true;
+  const removed=window.ContractReviewProjects.remove(data,id);if(!removed){close();toast('未删除项目，当前记录已变化');return;}
+  for(const contract of removed.contracts.filter(contract=>!data.contracts.some(current=>current.id===contract.id)))summaryTasks.get(contract.id)?.controller.abort();
+  for(let index=automaticSummaryQueue.length-1;index>=0;index--)if(!data.contracts.some(contract=>contract.id===automaticSummaryQueue[index].c.id))automaticSummaryQueue.splice(index,1);
+  if(!st().projects.some(item=>item.id===activeProject))activeProject=st().projects.find(item=>(item.contractIds||[]).includes(data.active))?.id||st().projects[0]?.id||null;
+  close();view='projects';shell();
+  const saved=await saveDurably();toast(saved?'项目已删除，原始文件与本地回收记录已保留':'项目已移入回收记录，但保存失败，请保留当前窗口并重试保存');
+ };
+}
+function projectDeleteButton(project){
+ const button=document.createElement('button');button.type='button';button.className='btn';button.dataset.projectDelete=project.id;button.textContent='删除项目';button.onclick=()=>deleteReviewProject(project.id);return button;
+}
+const deletionRenderProjects=renderProjects;
+renderProjects=function(){
+ deletionRenderProjects();
+ document.querySelectorAll('[data-v2="open-project"][data-id]').forEach(open=>{
+  const project=st().projects.find(item=>item.id===open.dataset.id),card=open.closest('.v2-card');if(!project||!card||card.querySelector('[data-project-delete]'))return;
+  const actions=document.createElement('div');actions.className='v2-actions';open.replaceWith(actions);actions.append(open,projectDeleteButton(project));
+ });
+};
+const deletionRenderProject=renderProject;
+renderProject=function(){
+ deletionRenderProject();const project=proj(),actions=document.querySelector('.v2-head .v2-actions');
+ if(project&&actions&&!actions.querySelector('[data-project-delete]'))actions.append(projectDeleteButton(project));
+};
+/* /project-deletion-integration:v1 */
+
+
 
 view='projects';await saveDurably();shell();
 })();

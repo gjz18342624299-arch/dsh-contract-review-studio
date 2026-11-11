@@ -1,0 +1,21 @@
+.element-review-page .v2-table input[data-inline-contract]{width:100%;max-width:480px;margin-bottom:7px}
+.field-review-actions{display:flex;gap:12px;align-items:center;flex-wrap:nowrap;min-height:28px}
+.field-review-choices{display:inline-flex;flex-shrink:0;border:1px solid #dce2e8;border-radius:5px;overflow:hidden}
+.field-review-choices>button{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;min-height:27px;border:0;background:#fff;color:#6b7885;font-size:11px;white-space:nowrap}
+.field-review-choices>button+button{border-left:1px solid #dce2e8}
+.field-review-choices>button.is-confirmed{background:#edf7f2;color:#27624c}
+.field-review-choices>button.needs-correction{background:#fff1ef;color:#a33d34}
+.field-review-choices>button:hover{background:#f1f4f6}
+.field-review-choices>button:focus-visible{outline-offset:-2px}
+.element-review-page .v2-table .field-review-source[data-v2="field"]{padding:3px 0;border:0;background:transparent;border-radius:0;min-height:27px;margin:0;color:#647789;font-size:11px;white-space:nowrap}
+.element-review-page .v2-table .field-review-source:hover{text-decoration:underline}
+.field-review-state{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;clip-path:inset(50%);border:0}
+.field-review-original{display:block;margin-top:5px}
+.field-review-bulk{display:flex;align-items:center;gap:4px}
+.element-review-page .v2-head button:disabled{background:#d4d9de;color:#65707c;border-color:#d4d9de;opacity:1;box-shadow:none}
+.review-task-empty{display:flex;flex-direction:column;align-items:center;gap:10px}
+.review-task-empty strong{color:#465363;font-size:14px}
+.review-task-empty p{line-height:1.9;max-width:300px}
+.review-task-spinner{width:25px;height:25px;border:2px solid #e1e7ec;border-top-color:#596e81;border-radius:50%;animation:review-task-spin .8s linear infinite}
+@keyframes review-task-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.review-task-spinner{animation:none;border-style:dotted}}
