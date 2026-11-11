@@ -67,8 +67,8 @@ body{font-family:"Segoe UI","Microsoft YaHei",sans-serif;-webkit-font-smoothing:
 /* Retain the original rail palette and layout; change only selection emphasis. */
 .rail .nav{position:relative}
 .rail .nav::before{content:"";display:block;position:absolute;left:3px;top:50%;transform:translateY(-50%);width:2px;height:16px;border-radius:2px;background:#dce2ec;opacity:0;pointer-events:none}
-.rail .nav.active::before{opacity:1}
-.rail .nav.active,.rail .nav.active:hover,.rail .nav.active:active{background:transparent;color:#fff;box-shadow:none}
+.rail .nav.active::before,.rail .nav:hover::before{opacity:1}
+.rail .nav:hover,.rail .nav:active,.rail .nav.active,.rail .nav.active:hover,.rail .nav.active:active{background:transparent;color:#fff;box-shadow:none}
 .rail .nav.active svg{color:#fff}
 .rail .nav:focus-visible{outline:2px solid #dce2ec;outline-offset:2px}
 </style>
