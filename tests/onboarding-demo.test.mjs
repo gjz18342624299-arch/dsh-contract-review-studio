@@ -106,7 +106,7 @@ test('ready demo uses the ordinary Word workflow and does not register a permane
  context.document={querySelector:()=>null,querySelectorAll:selector=>{removedSelectors.push(selector);return [];}};
  const integration=html.match(/\/\* onboarding-demo-integration:v2 \*\/[\s\S]*?\/\* \/onboarding-demo-integration:v2 \*\//)?.[0];assert.ok(integration,'v2 integration must be installed');
  vm.runInContext(integration,context);context.renderReview();assert.equal(ordinary,1);
- assert.equal(registrations.length,0);context.view='projects';context.shell();assert.equal(shells,1);assert.ok(removedSelectors.includes('#onboarding-demo,[data-demo-open]'));
+ assert.equal(registrations.length,0);context.view='projects';context.shell();assert.equal(shells,1);assert.ok(removedSelectors.includes('[data-demo-open]'));assert.ok(!removedSelectors.some(selector=>selector.includes('#onboarding-demo')));
  assert.equal(context.riskHTML(c,c.risks[0]),'<real-risk>');
 });
 test('application scripts compile and embed the current demo model',()=>{

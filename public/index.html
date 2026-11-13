@@ -72,7 +72,545 @@ body{font-family:"Segoe UI","Microsoft YaHei",sans-serif;-webkit-font-smoothing:
 .rail .nav.active svg{color:#fff}
 .rail .nav:focus-visible{outline:2px solid #dce2ec;outline-offset:2px}
 </style>
-</head><body>
+<style id="dsh-business-theme">/* DSH embedded workbench. App-owned adapter tokens; original documents stay untouched. */
+body.business-app {
+  --fallback-bg:#fff; --fallback-surface:#fff; --fallback-subtle:#f7f7f8; --fallback-raised:#f0f1f2;
+  --fallback-text:#0f1115; --fallback-muted:#61666b; --fallback-tertiary:#81858c;
+  --fallback-border:rgb(0 0 0 / 12%); --fallback-strong:rgb(0 0 0 / 20%);
+  --fallback-primary:#0f1115; --fallback-on-primary:#fff; --fallback-business:#4176e6;
+  --fallback-hover:rgb(0 0 0 / 4%); --fallback-success:#246b49; --fallback-warning:#8a5719; --fallback-danger:#b42318;
+  --fallback-success-bg:#edf7f1; --fallback-warning-bg:#fff5e8; --fallback-danger-bg:#fff0ee;
+  --app-bg:var(--dsw-alias-bg-base,var(--fallback-bg));
+  --app-surface:var(--dsw-alias-bg-layer-1,var(--fallback-surface));
+  --app-subtle:var(--dsw-alias-bg-layer-2,var(--fallback-subtle));
+  --app-raised:var(--fallback-raised);
+  --app-text:var(--dsw-alias-label-primary,var(--fallback-text));
+  --app-muted:var(--dsw-alias-label-secondary,var(--fallback-muted));
+  --app-tertiary:var(--dsw-alias-label-tertiary,var(--fallback-tertiary));
+  --app-border:var(--dsw-alias-border-l3,var(--fallback-border));
+  --app-border-strong:var(--dsw-alias-border-l4,var(--fallback-strong));
+  --app-primary:var(--dsw-alias-button-primary-fill,var(--fallback-primary));
+  --app-on-primary:var(--dsw-alias-label-primary-foreground,var(--fallback-on-primary));
+  --app-business:var(--dsw-alias-state-business-primary,var(--fallback-business));
+  --app-link:var(--dsw-alias-link,var(--app-business));
+  --app-hover:var(--dsw-alias-interactive-bg-hover,var(--fallback-hover));
+  --app-success:var(--fallback-success); --app-warning:var(--fallback-warning); --app-danger:var(--fallback-danger);
+  --app-success-bg:var(--fallback-success-bg); --app-warning-bg:var(--fallback-warning-bg); --app-danger-bg:var(--fallback-danger-bg);
+  --app-radius:var(--dsw-radius-md,12px); --app-radius-sm:var(--dsw-radius-sm,8px);
+  --purple:var(--app-link); --purple-dark:var(--app-text); --pale:var(--app-subtle);
+  --ink:var(--app-text); --muted:var(--app-muted); --line:var(--app-border); --bg:var(--app-bg);
+  --red:var(--app-danger); --orange:var(--app-warning); --green:var(--app-success);
+  --shadow:0 16px 60px rgb(0 0 0 / 14%);
+  margin:0; min-width:0; height:100dvh; overflow:hidden;
+  background:var(--app-bg); color:var(--app-text); color-scheme:light;
+  font-family:var(--dsw-font-family,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif);
+  font-size:14px; line-height:22px; font-variant-numeric:tabular-nums; -webkit-font-smoothing:antialiased;
+  container:workbench / inline-size;
+}
+body.business-app[data-app-theme="dark"] {
+  --fallback-bg:#151517; --fallback-surface:#1d1d20; --fallback-subtle:#232326; --fallback-raised:#2c2c30;
+  --fallback-text:#f9fafb; --fallback-muted:#cfd3d6; --fallback-tertiary:#adb2b8;
+  --fallback-border:rgb(255 255 255 / 16%); --fallback-strong:rgb(255 255 255 / 20%);
+  --fallback-primary:#f9fafb; --fallback-on-primary:#151517; --fallback-business:#679efe;
+  --fallback-hover:rgb(255 255 255 / 7%); --fallback-success:#8bd7aa; --fallback-warning:#efc083; --fallback-danger:#ffaaa1;
+  --fallback-success-bg:#20372b; --fallback-warning-bg:#382d20; --fallback-danger-bg:#3c2525;
+  --shadow:0 16px 60px rgb(0 0 0 / 35%); color-scheme:dark;
+}
+/* Every percentage-height ancestor must be bounded before the editor is mounted.
+   Otherwise focus/scrollIntoView scrolls the hidden body and clips the toolbars. */
+html:has(>body.business-app) {height:100%;min-height:0;overflow:hidden}
+body.business-app>#app {height:100%;min-height:0;min-width:0;overflow:hidden}
+.business-app *, .business-app *::before, .business-app *::after {box-sizing:border-box}
+.business-app :is(button,input,select,textarea) {font-family:inherit}
+.business-app :is(button,a,input,textarea,select):focus-visible {outline:2px solid var(--app-business);outline-offset:3px}
+.business-app :is(input,textarea,select):focus {border-color:var(--app-business)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--app-business) 13%,transparent)}
+.business-app :is(button,a) {transition:background .1s cubic-bezier(.4,0,.2,1),color .1s cubic-bezier(.4,0,.2,1),border-color .1s cubic-bezier(.4,0,.2,1)}
+.business-app :is(button:disabled,input:disabled,select:disabled) {opacity:.5;cursor:not-allowed}
+.business-app svg {width:16px;height:16px}
+.business-app ::selection {background:color-mix(in srgb,var(--app-business) 20%,transparent);color:inherit}
+.business-app ::-webkit-scrollbar-thumb {background:var(--app-border-strong);border-radius:8px}
+.business-app .shell {height:100%;min-height:0;min-width:0;display:flex;background:var(--app-bg)}
+.business-app .main {min-width:0;min-height:0;width:100%;background:var(--app-bg);overflow:hidden}
+.business-app .workspace {flex:1 1 0;min-height:0;overflow:hidden}
+.business-app .main>:is(.business-header,.topbar,.v2-stepbar),.business-app .mobile-switch {flex-shrink:0}
+.business-app .document-side {overflow:hidden}
+.business-app .document-scroll {min-height:0;flex:1 1 0}
+.business-app .document-scroll:has(>#wps-mount) {padding:0;overflow:hidden}
+.business-app .document-scroll>#wps-mount {height:100%;min-height:0!important;max-height:100%;min-width:0}
+.business-app .business-header {display:flex;align-items:center;gap:24px;min-height:64px;padding:12px 24px;border-bottom:1px solid var(--app-border);flex-shrink:0;background:var(--app-bg);flex-wrap:wrap}
+.business-app .business-name {font-size:14px;line-height:22px;font-weight:600;color:var(--app-text);white-space:nowrap}
+.business-app .topbar {height:auto;min-height:64px;padding:12px 24px;gap:16px;background:var(--app-bg);border-color:var(--app-border);flex-wrap:wrap}
+.business-app .app-label {font-size:14px;font-weight:600;line-height:22px;letter-spacing:0;color:var(--app-text);margin:0}
+.business-app .demo-label {display:none}
+.business-app .file-title {font-size:12px;font-weight:400;line-height:18px;letter-spacing:0;color:var(--app-muted);max-width:320px;margin-top:4px}
+.business-app .file-title svg {color:var(--app-muted);width:14px;height:14px}
+.business-app[data-business-view="overview"] .topbar {display:none}
+.business-app :is(.journey-toolbar .actions,.journey-pickers) {gap:8px;min-width:0}
+.business-app .journey-pickers label {font-size:12px;color:var(--app-muted)}
+.business-app .journey-pickers select {background:var(--app-surface);color:var(--app-text);border-color:var(--app-border);border-radius:12px;height:36px;max-width:min(34cqw,340px)}
+.business-app .journey-pickers #journey-project {max-width:min(25cqw,220px)}
+.business-app .rail.workspace-rail, .business-app .rail {
+  position:static;display:flex;flex-direction:row;align-items:center;width:auto;min-width:0;
+  margin:0 0 0 auto;padding:0;gap:20px;background:transparent;border:0;color:var(--app-muted);overflow:visible;
+}
+.business-app .rail :is(.brand,.workspace-brand,.rail-bottom,.workspace-rail-footer,.avatar,.workspace-toggle) {display:none}
+.business-app .rail .rail-nav {display:flex;flex-direction:row;align-items:center;width:auto;margin:0;gap:4px}
+.business-app .rail .nav {display:flex;flex-direction:row;align-items:center;justify-content:center;width:auto;min-height:36px;padding:0 12px;margin:0;gap:8px;border-radius:8px;background:transparent;color:var(--app-muted);font-size:14px;line-height:22px;letter-spacing:0;box-shadow:none;white-space:nowrap}
+.business-app .rail .nav :is(svg,span) {color:inherit;position:static}
+.business-app .rail .nav svg {width:16px;height:16px}
+.business-app .rail .nav::before,.business-app .rail .nav::after {display:none}
+.business-app .rail .nav:hover {background:var(--app-hover);color:var(--app-text)}
+.business-app .rail .nav.active,.business-app .rail .nav.active:hover {background:var(--app-subtle);color:var(--app-text);font-weight:600;box-shadow:none}
+.business-app .rail #workbench-settings {position:static;display:flex;align-items:center;gap:8px;width:auto;min-width:36px;height:36px;min-height:36px;margin:0;padding:0 10px;border:0;border-radius:8px;color:var(--app-muted);background:transparent;font-size:12px;white-space:nowrap}
+.business-app .rail #workbench-settings>span {display:inline}
+.business-app .rail #workbench-settings svg {width:16px;height:16px}
+.business-app .rail #workbench-settings:hover {background:var(--app-hover);color:var(--app-text)}
+.business-app :is(.btn,.v2-page .btn,.v2-file-row .btn) {min-height:36px;padding:6px 14px;line-height:22px;font-size:14px;font-weight:500;border:1px solid var(--app-border);border-radius:var(--app-radius);color:var(--app-text);background:var(--app-surface);box-shadow:none;text-decoration:none}
+.business-app .btn:hover {background:var(--app-hover);border-color:var(--app-border-strong)}
+.business-app .btn.primary {background:var(--app-primary)!important;border-color:var(--app-primary)!important;color:var(--app-on-primary)!important;box-shadow:none}
+.business-app .btn.primary:hover {background:var(--app-primary)!important;color:var(--app-on-primary)!important;filter:brightness(.92)}
+.business-app .btn.soft {background:var(--app-subtle);color:var(--app-text);border-color:transparent}
+.business-app .btn.ghost {background:transparent;border-color:transparent;color:var(--app-muted)}
+.business-app .icon-btn {width:32px;height:32px;border-radius:8px;color:var(--app-muted)}
+.business-app .icon-btn:hover {color:var(--app-text);background:var(--app-hover)}
+.business-app :is(.text-link,.v2-table button,.v2-evidence button,.breadcrumb button) {font-size:12px;line-height:18px;color:var(--app-link)}
+.business-app :is(.v2-page,.library) {padding:24px;min-width:0;min-height:0;background:var(--app-bg);overflow:auto}
+.business-app :is(.v2-head,.library-header) {margin-bottom:24px;gap:16px;align-items:flex-start}
+.business-app :is(.v2-page h1,.library h1) {font-size:20px;line-height:28px;font-weight:600;letter-spacing:0;color:var(--app-text);margin:0 0 8px}
+.business-app :is(.v2-page h2,.v2-page h3,.v2-card h3,.rule-card h3) {font-size:14px;line-height:22px;font-weight:600;color:var(--app-text);letter-spacing:0}
+.business-app :is(.v2-eyebrow,.eyebrow) {display:none}
+.business-app :is(.v2-page p,.library-header p) {font-size:14px;line-height:22px;color:var(--app-muted)}
+.business-app :is(.v2-sub,.v2-saved,.cell-muted,.breadcrumb,.list-foot,.clarity-help) {color:var(--app-muted);font-size:12px;line-height:18px}
+.business-app :is(.v2-stats,.stats) {gap:16px;margin:0 0 24px}
+.business-app :is(.v2-stat,.stat) {padding:16px 20px;border:1px solid var(--app-border);border-radius:12px;background:var(--app-surface);box-shadow:none}
+.business-app :is(.v2-stat span,.stat p) {font-size:12px;color:var(--app-muted)}
+.business-app :is(.v2-stat strong,.stat strong) {font-size:24px;line-height:32px;font-weight:600;letter-spacing:0;color:var(--app-text);margin-top:8px}
+.business-app .v2-grid {grid-template-columns:repeat(auto-fill,minmax(min(100%,310px),1fr));gap:16px}
+.business-app :is(.v2-card,.rule-card,.v2-check,.v2-template,.version) {border:1px solid var(--app-border);border-radius:12px;background:var(--app-surface);padding:20px;box-shadow:none;transform:none}
+.business-app .v2-card:hover {border-color:var(--app-border-strong);box-shadow:none;transform:none}
+.business-app .v2-card h3 {margin:16px 0 8px}
+.business-app .v2-card .v2-card-foot {border-color:var(--app-border);gap:12px;flex-wrap:wrap;margin-top:20px;padding-top:16px}
+.business-app .v2-card .v2-card-foot>.v2-actions {margin-left:auto}
+.business-app :is(.v2-icon,.file-icon,.stat-icon) {color:var(--app-muted);background:var(--app-subtle);border-color:var(--app-border);border-radius:8px}
+.business-app .v2-icon {width:36px;height:36px}
+.business-app .v2-icon svg {width:18px;height:18px}
+.business-app :is(.v2-note,.demo-note,.summary-note,.v2-evidence,.v2-rule-test,.v2-comment,.review-context,.v2-project-banner) {background:var(--app-subtle);color:var(--app-muted);border:1px solid var(--app-border);border-radius:12px;font-size:12px;line-height:20px;box-shadow:none}
+.business-app :is(.v2-note,.demo-note,.summary-note,.v2-evidence,.v2-rule-test) {padding:12px 16px}
+.business-app .v2-project-banner {padding:16px 20px;margin-bottom:20px}
+.business-app .v2-project-banner strong {color:var(--app-text);font-size:16px;line-height:26px}
+.business-app .v2-project-banner p {font-size:12px;margin-top:4px}
+.business-app .v2-badge,.business-app .badge {font-size:12px;line-height:18px;font-weight:400;padding:2px 8px;border-radius:6px;color:var(--app-muted);background:var(--app-subtle)}
+.business-app :is(.v2-badge.amber,.badge.medium,.badge.wait) {background:var(--app-warning-bg);color:var(--app-warning)}
+.business-app :is(.v2-badge.green,.badge.done) {background:var(--app-success-bg);color:var(--app-success)}
+.business-app :is(.v2-badge.red,.badge.high) {background:var(--app-danger-bg);color:var(--app-danger)}
+.business-app .badge.low {background:color-mix(in srgb,var(--app-business) 10%,var(--app-bg));color:var(--app-business)}
+.business-app :is(.v2-toolbar,.list-controls) {gap:12px;flex-wrap:wrap;margin:20px 0 16px}
+.business-app :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),textarea,select) {min-height:36px;padding:6px 12px;border:1px solid var(--app-border);border-radius:var(--app-radius);background:var(--app-surface);color:var(--app-text);font-size:14px;line-height:22px}
+.business-app :is(#office-service-url,#office-service-token) {background:var(--app-surface);color:var(--app-text);border-color:var(--app-border);border-radius:12px}
+.business-app #v2-project-search {max-width:320px;margin-left:auto}
+.business-app :is(input,textarea)::placeholder {color:var(--app-tertiary);opacity:1}
+.business-app input:is([type="checkbox"],[type="radio"]) {accent-color:var(--app-business);width:16px;height:16px;flex-shrink:0}
+.business-app .choice-row {gap:8px}
+.business-app .choice-row label {font-size:12px;line-height:20px;color:var(--app-muted);border-color:var(--app-border);border-radius:8px}
+.business-app :is(.v2-table-wrap,.contract-table) {border:1px solid var(--app-border);border-radius:12px;background:var(--app-surface);overflow:auto;max-width:100%}
+.business-app .v2-table {font-size:13px;line-height:20px}
+.business-app .v2-table :is(th,td) {padding:12px 16px;border-color:var(--app-border);color:var(--app-text)}
+.business-app .v2-table th {background:var(--app-subtle);color:var(--app-muted);font-weight:500}
+.business-app .v2-table td:first-child {color:var(--app-text)}
+.business-app .v2-table .conflict td {background:var(--app-warning-bg)}
+.business-app .v2-table .confirmed td {background:var(--app-success-bg)}
+.business-app .v2-file-row {background:var(--app-surface);border-color:var(--app-border);padding:16px;gap:16px}
+.business-app .v2-file-row strong {font-size:14px;line-height:22px;overflow-wrap:anywhere}
+.business-app .v2-file-row small {font-size:12px;color:var(--app-muted)}
+.business-app .v2-file-row>div:last-child {display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.business-app .field-review-choices {border-color:var(--app-border);border-radius:8px}
+.business-app .field-review-choices>button {font-size:12px;min-height:28px;background:var(--app-surface);color:var(--app-muted);border-color:var(--app-border)}
+.business-app .field-review-choices>button.is-confirmed {background:var(--app-success-bg);color:var(--app-success)}
+.business-app .field-review-choices>button.needs-correction {background:var(--app-warning-bg);color:var(--app-warning)}
+.business-app .field-review-choices>button:hover {background:var(--app-hover)}
+.business-app .element-review-page .v2-table .field-review-source[data-v2="field"] {font-size:12px;color:var(--app-link);background:transparent}
+.business-app .v2-stepbar {background:var(--app-bg);border-color:var(--app-border);gap:8px;padding:8px 24px;min-height:52px;max-width:100%;overflow-x:auto;justify-content:flex-start}
+.business-app .v2-stepbar button {background:transparent;color:var(--app-muted);font-size:12px;min-height:32px;padding:4px 12px;border-radius:8px;white-space:nowrap;flex-shrink:0}
+.business-app .v2-stepbar button.active {background:var(--app-subtle);color:var(--app-text);box-shadow:none;font-weight:600}
+.business-app .main .v2-stepbar {min-height:52px;padding:8px 24px!important;gap:8px!important;justify-content:flex-start!important}
+.business-app .v2-stepbar button[data-v2="stage"] {padding:4px 12px!important;color:var(--app-muted)!important;border-radius:8px;min-height:32px}
+.business-app .v2-stepbar button[data-v2="stage"].active {background:var(--app-subtle)!important;color:var(--app-text)!important}
+.business-app .v2-stepbar button[data-v2="stage"]+button[data-v2="stage"]::before {display:none}
+.business-app .journey-back {position:static;margin-right:auto;color:var(--app-link)!important}
+.business-app .step-dot {width:22px;height:22px;border-color:var(--app-border);color:var(--app-muted);font-size:12px}
+.business-app .v2-stepbar button.active .step-dot {background:var(--app-primary);color:var(--app-on-primary);border-color:var(--app-primary)}
+.business-app .v2-stepbar button.active .step-name {color:var(--app-text)}
+.business-app .v2-stepbar .v2-project-name {font-size:12px;color:var(--app-muted)}
+.business-app .v2-review-strip {background:var(--app-subtle);color:var(--app-muted);border-color:var(--app-border);padding:8px 16px;font-size:12px}
+.business-app .v2-review-strip select {font-size:12px!important;color:var(--app-text)!important;min-height:28px;padding:2px 8px;border-radius:8px}
+.business-app :is(.doc-top,.panel,.panel-tabs,.panel-bottom) {background:var(--app-surface);border-color:var(--app-border)}
+.business-app .doc-top {color:var(--app-muted);font-size:12px}
+.business-app .tab-word {color:var(--app-text);border-color:var(--app-text)}
+.business-app .doc-subbar {color:var(--app-muted);font-size:12px!important}
+.business-app .document-scroll {background:var(--app-subtle);padding:20px 24px;min-width:0}
+/* Word, PDF and rendered original pages retain their original colors. */
+.business-app .paper {background:#fff;color:#222;border-color:#ddd;box-shadow:0 2px 12px rgb(0 0 0 / 5%)}
+.business-app .panel-tabs {height:52px;border-bottom-color:var(--app-border)!important}
+.business-app .panel .panel-tabs .panel-tab {font-size:14px;line-height:22px;color:var(--app-muted);border-radius:8px!important}
+.business-app .panel .panel-tabs .panel-tab.active {background:var(--app-subtle)!important;color:var(--app-text)!important;border-radius:8px!important;font-weight:600}
+.business-app .panel .panel-tabs .panel-tab.active::after {display:none!important}
+.business-app :is(.review-pane-toggle,.review-pane-restore) {background:var(--app-surface);border-color:var(--app-border);border-radius:8px;color:var(--app-muted)}
+.business-app .review-divider {background:var(--app-subtle);border-color:var(--app-border)}
+.business-app .review-divider::after {background:var(--app-border-strong)}
+.business-app .review-divider:hover,.business-app .review-divider:focus-visible {background:var(--app-hover)}
+.business-app .review-context {margin:16px 16px 0;padding:16px}
+.business-app .context-top {font-size:14px;line-height:22px;color:var(--app-text)}
+.business-app .context-top strong {color:var(--app-text)}
+.business-app .context-top button {font-size:12px;color:var(--app-link)}
+.business-app .context-tags {font-size:12px;line-height:18px;color:var(--app-muted);gap:6px}
+.business-app .context-tags span {background:var(--app-raised);border-radius:6px;padding:2px 6px}
+.business-app .review-summary {padding:16px}
+.business-app .summary-line {font-size:14px;color:var(--app-text)}
+.business-app .summary-line .text-muted {font-size:12px;color:var(--app-muted)}
+.business-app :is(.progress,.v2-progress) {background:var(--app-raised)}
+.business-app :is(.progress i,.v2-progress i) {background:var(--app-text)}
+.business-app .filter-row {padding:0 16px 16px;gap:6px}
+.business-app .chip {font-size:12px;line-height:18px;border-color:var(--app-border);color:var(--app-muted);border-radius:8px;padding:4px 10px}
+.business-app .chip.active {background:var(--app-subtle);border-color:var(--app-border-strong);color:var(--app-text)}
+.business-app .status-filter {font-size:12px;max-width:130px;min-height:28px;padding:2px 6px;border-radius:8px}
+.business-app .risk-list {padding:0 16px 20px;gap:12px}
+.business-app .risk-card {background:var(--app-surface);border-color:var(--app-border);border-radius:12px;box-shadow:none}
+.business-app .risk-card.active,.business-app .risk-card[open] {border-color:var(--app-border-strong);box-shadow:none}
+.business-app .risk-heading {background:var(--app-surface);padding:14px;gap:8px}
+.business-app .risk-heading:hover {background:var(--app-hover)}
+.business-app .risk-title {font-size:14px;line-height:22px;color:var(--app-text)}
+.business-app .risk-num {background:var(--app-subtle);color:var(--app-muted);font-size:12px;border-radius:6px}
+.business-app .risk-detail {padding:0 16px 16px}
+.business-app :is(.risk-label,.risk-footer,.panel-bottom,.chat-context) {font-size:12px;line-height:18px;color:var(--app-muted);border-color:var(--app-border)}
+.business-app :is(.quote,.explanation,.risk-detail p,.suggestion p) {font-size:14px;line-height:24px;color:var(--app-text)}
+.business-app .quote {background:var(--app-subtle);color:var(--app-muted);border-color:var(--app-border-strong);padding:12px}
+.business-app .suggestion {background:var(--app-subtle);border-color:var(--app-border);border-radius:8px;padding:12px}
+.business-app .suggestion .risk-label {color:var(--app-muted)}
+.business-app .risk-actions {flex-wrap:wrap}
+.business-app .risk-actions .btn {font-size:12px;min-height:28px;line-height:18px;padding:4px 10px;border-radius:8px}
+.business-app .panel-bottom {padding:12px 16px;gap:8px;flex-wrap:wrap}
+.business-app :is(.summary-view,.v2-tab-content,.chat-view) {padding:20px}
+.business-app :is(.section-title,.info-list) {font-size:14px;line-height:22px;color:var(--app-text)}
+.business-app .info-list {grid-template-columns:84px minmax(0,1fr);gap:12px}
+.business-app .info-list dt {color:var(--app-muted)}
+.business-app .info-list dd {color:var(--app-text);overflow-wrap:anywhere}
+.business-app .chat-intro h3 {font-size:16px;color:var(--app-text)}
+.business-app :is(.chat-intro p,.chat-msg,.prompt) {font-size:14px;line-height:22px;color:var(--app-text)}
+.business-app :is(.chat-msg,.prompt,.chat-input,.chat-msg.user) {background:var(--app-surface);border-color:var(--app-border)}
+.business-app .chat-msg {background:var(--app-subtle)}
+.business-app .chat-intro .sparkle {background:var(--app-subtle);color:var(--app-muted)}
+.business-app .overlay {background:rgb(0 0 0 / 32%);backdrop-filter:none;padding:24px}
+.business-app :is(.modal,.drawer) {background:var(--app-surface);color:var(--app-text);border:1px solid var(--app-border);border-radius:20px;max-width:100%;box-shadow:var(--shadow)}
+.business-app .modal {max-height:calc(100dvh - 48px)}
+.business-app .modal-head {padding:20px 24px 16px}
+.business-app .modal-head h2 {font-size:20px;line-height:28px;font-weight:600;color:var(--app-text)}
+.business-app .modal-content {padding:0 24px 24px}
+.business-app :is(.modal-sub,.modal-content p,.version p):not(.word-compare-pages *):not(#history-preview-document *):not(.docx-wrapper *):not(.paper *) {font-size:14px;line-height:22px;color:var(--app-muted)}
+.business-app .modal-foot {background:var(--app-surface);border-color:var(--app-border);padding:16px 24px;flex-wrap:wrap;position:sticky;bottom:0}
+.business-app .field label {font-size:14px;line-height:22px;color:var(--app-text);margin-bottom:8px}
+.business-app .field {margin-bottom:20px}
+.business-app .drawer-wrap {background:rgb(0 0 0 / 28%)}
+.business-app .drawer {width:420px;max-width:100%;border-radius:16px 0 0 16px}
+.business-app :is(.upload,.v2-upload,#upload-drop-zone,.sample-file,.role-option,.v2-file-choice) {background:var(--app-subtle);border-color:var(--app-border);border-radius:12px;color:var(--app-muted);font-size:14px}
+.business-app :is(.upload small,#upload-drop-zone span,.role-option strong) {font-size:12px;color:var(--app-muted)}
+.business-app .role-option.selected {background:var(--app-subtle);border-color:var(--app-business);color:var(--app-text)}
+.business-app :is(.error,.v2-inline-error) {font-size:12px;color:var(--app-danger)}
+.business-app .toast {background:var(--app-primary);color:var(--app-on-primary);border-color:var(--app-border);border-radius:12px;max-width:calc(100% - 32px);font-size:14px;line-height:22px}
+.business-app .toast svg {color:inherit}
+.business-app :is(.business-destructive,.btn.business-destructive) {color:var(--app-danger)}
+.business-app .btn.primary.business-destructive {background:var(--app-danger)!important;border-color:var(--app-danger)!important;color:var(--app-bg)!important}
+.business-app .empty {font-size:14px;line-height:22px;color:var(--app-muted)}
+.business-app .empty svg {color:var(--app-muted)}
+/* Later-inserted settings/template components share the same surfaces. */
+.business-app :is(.settings-card,.settings-section,.journey-card,.template-card,.template-composer,.ai-thread,.ai-bubble,.clarity-card,.clarity-row,.template-ai-panel,.template-detail,.library-detail,.library-sidebar,.library-main) {color:var(--app-text);background:var(--app-surface);border-color:var(--app-border);border-radius:12px}
+.business-app :is(.v2-template,.v2-check) :is(strong,h4) {font-size:14px;line-height:22px;color:var(--app-text)}
+.business-app .v2-template small {font-size:12px;color:var(--app-muted)}
+.business-app .v2-template.active {background:var(--app-subtle);border-color:var(--app-border-strong);box-shadow:none}
+.business-app :is(.settings-main h3,.service-card h4,.readable-card h4) {font-size:14px;line-height:22px;color:var(--app-text)}
+.business-app .settings-nav {border-color:var(--app-border)}
+.business-app .settings-nav button {font-size:14px;color:var(--app-muted);border-radius:8px}
+.business-app .settings-nav button.active {background:var(--app-subtle);color:var(--app-text)}
+.business-app .settings-field label {font-size:14px;color:var(--app-text)}
+.business-app .service-card,.business-app .readable-card {background:var(--app-surface);border-color:var(--app-border);border-radius:12px}
+.business-app :is(.service-status,.settings-bottom,.readable-meta) {font-size:12px!important;line-height:20px;color:var(--app-muted)!important;border-color:var(--app-border)}
+.business-app .service-status[data-error="true"] {color:var(--app-danger)!important}
+.business-app .service-doc,.business-app .readable-card a {font-size:12px;color:var(--app-link)}
+.business-app :is(.readable-card p,.readable-law-body) {font-size:14px;line-height:24px;color:var(--app-text)}
+.business-app .readable-tag {border-color:var(--app-border);color:var(--app-muted);font-size:12px;border-radius:6px}
+.business-app .law-outdated {color:var(--app-danger)!important;background:var(--app-danger-bg);border-color:var(--app-danger)!important}
+.business-app .summary-lead {font-size:16px;line-height:26px;background:var(--app-subtle);border-color:var(--app-border-strong);color:var(--app-text)}
+.business-app .summary-facts {border-color:var(--app-border);border-radius:12px}
+.business-app .template-search-actions {flex-wrap:wrap;min-width:0}
+.business-app .template-library-actions>.btn.primary:not(:first-child),.business-app #guide-template {background:var(--app-surface)!important;color:var(--app-text)!important;border-color:var(--app-border)!important}
+.business-app .template-workspace {display:grid;grid-template-columns:minmax(0,1fr) clamp(360px,32cqw,420px);position:relative;min-width:0;min-height:0;overflow:hidden;flex:1 1 0}
+.business-app .template-workspace>.v2-page {grid-column:1;grid-row:1;width:100%;height:100%;min-width:0;min-height:0;overflow:auto}
+.business-app .template-ai-panel {position:static;inset:auto;grid-column:2;grid-row:1;width:auto;max-width:none;height:100%;min-width:0;min-height:0;border-left:1px solid var(--app-border);border-radius:0;background:var(--app-surface);z-index:auto;box-shadow:none}
+.business-app .template-ai-panel header {font-size:14px;border-color:var(--app-border)}
+.business-app .template-ai-panel header strong {border:0}
+.business-app .template-ai-panel .clarity-form.template-composer {background:var(--app-surface);border-color:var(--app-border)}
+.business-app .template-ai-panel :is(#template-status,.template-composer>label) {font-size:12px;color:var(--app-muted)}
+.business-app .ai-bubble {font-size:14px;line-height:24px}
+.business-app .ai-bubble.user {background:var(--app-subtle)}
+.business-app .ai-bubble.assistant {background:var(--app-surface);border-color:var(--app-border)}
+.business-app .template-ai-drawer .modal {width:min(420px,100%)!important;border-radius:16px 0 0 16px!important;background:var(--app-surface)}
+.business-app .onboarding-choice :is(h3,p) {color:var(--app-text)}
+.business-app .onboarding-choice .step-dot {background:var(--app-subtle);color:var(--app-muted);border-color:var(--app-border)}
+.business-app .onboarding-choice:first-child .step-dot {background:var(--app-primary);color:var(--app-on-primary)}
+.business-app .onboarding-choice:not(:last-child)::after {background:var(--app-border)}
+.business-app .onboarding-modal .modal-foot {background:var(--app-surface)}
+.business-app :is(.v2-check p,.v2-check small) {font-size:14px;line-height:22px;color:var(--app-muted)}
+.business-app :is(.v2-page,.panel,.modal,.drawer) :is([style*="color:#"],[style*="color: #"]):not(.word-compare-pages *):not(#history-preview-document *):not(.docx-wrapper *):not(.paper *) {color:var(--app-muted)!important}
+.business-app :is(.v2-page,.panel,.modal,.drawer) :is(h1,h2,h3,h4,strong)[style*="color"]:not(.word-compare-pages *):not(#history-preview-document *):not(.docx-wrapper *):not(.paper *) {color:var(--app-text)!important}
+.business-app :is(.v2-page,.panel,.modal,.drawer) :is([style*="font-size:10px"],[style*="font-size:11px"]):not(.word-compare-pages *):not(#history-preview-document *):not(.docx-wrapper *):not(.paper *) {font-size:12px!important;line-height:20px}
+.business-app :is(.v2-page,.panel,.modal,.drawer) :is(div,section,details)[style*="background:"]:not(.word-compare-pages *):not(#history-preview-document *):not(.docx-wrapper *):not(.paper *) {background:var(--app-subtle)!important;border-color:var(--app-border)!important}
+.business-app .word-compare-pages,.business-app #history-preview-document {background:var(--app-subtle)}
+.business-app .word-compare-pages section {color:#222;background:#fff}
+.business-app #history-preview-document>article {background:#fff!important;color:#222!important}
+.business-app .word-compare-grid h3 {background:var(--app-subtle);color:var(--app-text)}
+.business-app .word-diff-legend i {color:#222}
+.business-app .review-task-empty strong {color:var(--app-text)}
+.business-app .review-task-spinner {border-color:var(--app-border);border-top-color:var(--app-text)}
+.business-app .mobile-switch {background:var(--app-bg);border-color:var(--app-border)}
+.business-app .mobile-switch button {font-size:14px;min-height:36px;color:var(--app-muted);border-radius:8px}
+.business-app .mobile-switch button.active {background:var(--app-subtle);color:var(--app-text);box-shadow:none}
+@container workbench (max-width:1100px) {
+  .business-app .topbar {padding:12px 20px}
+  .business-app .rail {gap:12px}
+  .business-app .rail .nav {padding:0 10px}
+  .business-app .rail #workbench-settings>span {display:none}
+  .business-app .v2-file-row {grid-template-columns:minmax(180px,1.7fr) 90px 120px auto}
+}
+@container workbench (max-width:800px) {
+  .business-app .business-header {padding:12px 16px;gap:8px}
+  .business-app .topbar {padding:12px 16px;gap:12px}
+  .business-app .rail {flex-basis:100%;margin:0;justify-content:space-between;gap:4px}
+  .business-app .rail .nav {font-size:14px;padding:0 10px;gap:6px}
+  .business-app :is(.v2-page,.library) {padding:20px 16px}
+  .business-app .v2-stats {gap:8px}
+  .business-app .v2-stat {padding:12px}
+  .business-app .v2-stat strong {font-size:24px}
+  .business-app #v2-project-search {margin-left:0;max-width:100%}
+  .business-app .v2-project-banner {flex-direction:column;align-items:flex-start}
+  .business-app .v2-rule-layout {display:flex;flex-direction:column;gap:20px}
+  .business-app .v2-head {flex-wrap:wrap;margin-bottom:20px}
+  .business-app .v2-file-row {grid-template-columns:minmax(0,1fr);gap:12px}
+  .business-app .v2-file-row>*:nth-child(2),.business-app .v2-file-row>*:nth-child(3) {display:block}
+  .business-app .v2-file-row>div:last-child {justify-content:flex-start}
+  .business-app .v2-stepbar {padding:8px 16px}
+  .business-app .main .v2-stepbar {padding:8px 16px!important}
+  .business-app .journey-back {font-size:0!important;min-width:28px;padding:4px!important}
+  .business-app .journey-back::before {content:'←';font-size:18px}
+  .business-app .workspace[data-adjustable-review] {grid-template-columns:minmax(0,1fr)!important}
+  .business-app .workspace[data-adjustable-review]>.panel,.business-app .workspace[data-adjustable-review]>.document-side {grid-column:1;grid-row:1}
+  .business-app .workspace.mobile-doc>.document-side {display:flex}
+  .business-app .workspace.mobile-risk>.document-side {display:none}
+  .business-app .overlay {padding:12px}
+  .business-app .modal {max-height:calc(100dvh - 24px)}
+  .business-app .modal-head {padding:20px 20px 16px}
+  .business-app .modal-content {padding:0 20px 20px}
+  .business-app .modal-foot {padding:16px 20px}
+}
+@container workbench (max-width:520px) {
+  .business-app .rail .nav {font-size:12px;padding:0 8px;gap:5px}
+  .business-app .rail .rail-nav {gap:2px}
+  .business-app .v2-stat {padding:12px 8px}
+  .business-app .v2-stat span {font-size:12px;line-height:18px;display:block}
+  .business-app .v2-templates,.business-app .v2-two {grid-template-columns:1fr}
+  .business-app .v2-card {padding:16px}
+  .business-app .v2-card .v2-card-foot {align-items:flex-start}
+  .business-app .v2-card .v2-card-foot>.v2-actions {margin-left:0;width:100%}
+  .business-app .v2-card-foot .btn {font-size:12px;min-height:28px;border-radius:8px;padding:4px 10px}
+  .business-app .topbar .actions {gap:6px;justify-content:flex-start!important;flex-wrap:wrap}
+  .business-app .topbar .actions .btn {font-size:12px;min-height:28px;line-height:18px;border-radius:8px;padding:4px 10px}
+  .business-app .field-review-actions {gap:8px;flex-wrap:wrap}
+}
+@media(prefers-reduced-motion:reduce) {
+  .business-app *,.business-app *::before,.business-app *::after {animation-duration:.01ms!important;transition:none!important;scroll-behavior:auto!important}
+}
+
+/* A compact working surface: neutral workspace, white content, and comparable project rows. */
+body.business-app {
+  --app-workspace:color-mix(in srgb,var(--app-text) 3.5%,var(--app-bg));
+  --app-soft:color-mix(in srgb,var(--app-text) 4.5%,var(--app-bg));
+  --app-divider:color-mix(in srgb,var(--app-text) 9%,var(--app-bg));
+}
+.business-app .main,.business-app :is(.v2-page,.library) {background:var(--app-workspace)}
+.business-app .business-header {min-height:56px;gap:28px;padding:10px 24px;border-color:var(--app-divider)}
+.business-app .business-name {padding-right:28px;border-right:1px solid var(--app-divider);line-height:24px}
+.business-app .business-header .rail {flex:1;gap:24px;margin:0}
+.business-app .business-header .rail .rail-nav {gap:4px}
+.business-app .business-header .rail .nav {min-height:34px;padding:0 12px;font-size:14px;color:var(--app-muted)}
+.business-app .business-header .rail .nav.active {background:var(--app-soft);color:var(--app-text)}
+.business-app .business-header .rail #workbench-settings {margin-left:auto;font-size:12px}
+/* Override the installed package's former dark sidebar rules, including SVGs and marker pseudos. */
+.business-app .business-header .rail.workspace-rail .nav {height:36px;min-height:36px;gap:8px;border:1px solid transparent;border-radius:8px;box-shadow:none}
+.business-app .business-header .rail.workspace-rail .nav:hover {background:var(--app-hover);color:var(--app-text)}
+.business-app .business-header .rail.workspace-rail .nav.active {background:var(--app-soft);border-color:var(--app-divider);color:var(--app-text);font-weight:600}
+.business-app .business-header .rail.workspace-rail .nav svg {width:16px;height:16px;color:inherit;stroke:currentColor;stroke-width:1.75;opacity:1}
+.business-app .business-header .rail.workspace-rail .nav>span {color:inherit}
+.business-app .business-header .rail.workspace-rail .nav::before,.business-app .business-header .rail.workspace-rail .nav::after {content:none;display:none;opacity:0}
+.business-app .business-header .rail.workspace-rail .nav:focus-visible {outline:2px solid var(--app-business);outline-offset:2px}
+.business-app .business-project-page {padding:24px 28px}
+.business-app .business-project-page .v2-head {align-items:center;margin-bottom:16px}
+.business-app .business-project-page .v2-head h1 {font-size:20px;line-height:28px;margin-bottom:4px}
+.business-app .business-project-page .v2-head p {font-size:13px;line-height:20px}
+.business-app .business-project-page .v2-head .v2-actions {gap:16px;align-items:center}
+.business-app .business-project-page #onboarding-demo {color:var(--app-muted);font-size:12px}
+.business-app .business-project-page #onboarding-demo:hover {color:var(--app-link)}
+.business-app .business-project-page .v2-stats {display:flex;align-items:center;gap:0;margin:0 0 20px;padding:0;min-height:40px}
+.business-app .business-project-page .v2-stat {display:flex;align-items:baseline;gap:12px;min-width:0;padding:0 28px;border:0;border-right:1px solid var(--app-divider);border-radius:0;background:transparent}
+.business-app .business-project-page .v2-stat:first-child {padding-left:0}
+.business-app .business-project-page .v2-stat:last-child {border-right:0}
+.business-app .business-project-page .v2-stat span {font-size:12px;line-height:20px;white-space:nowrap}
+.business-app .business-project-page .v2-stat strong {font-size:20px;line-height:28px;font-weight:600;margin:0}
+.business-app .business-project-page .v2-toolbar {margin:0;padding:12px 16px;gap:16px;border:1px solid var(--app-divider);border-bottom:0;border-radius:12px 12px 0 0;background:var(--app-surface)}
+.business-app .business-project-page .v2-toolbar .choice-row {gap:4px;padding:3px;background:var(--app-soft);border-radius:8px}
+.business-app .business-project-page .v2-toolbar .choice-row .btn {min-height:28px;padding:3px 12px;line-height:20px;font-size:13px;background:transparent;border:0;border-radius:6px;box-shadow:none;color:var(--app-muted)}
+.business-app .business-project-page .v2-toolbar .choice-row .btn.soft {background:var(--app-surface);color:var(--app-text);box-shadow:0 1px 3px rgb(0 0 0 / 7%)}
+.business-app .business-project-page #v2-project-search {min-height:32px;line-height:20px;padding:5px 12px;border-radius:8px;font-size:13px;width:280px;max-width:40%;border-color:var(--app-divider);background:var(--app-workspace)}
+.business-app .business-project-list {display:block;border:1px solid var(--app-divider);border-radius:0 0 12px 12px;overflow:hidden;background:var(--app-surface)}
+.business-app :is(.business-list-heading,.business-project-row) {display:grid;grid-template-columns:minmax(220px,1fr) 110px 96px 100px 120px 128px;align-items:center;gap:16px;padding:0 20px}
+.business-app .business-list-heading {min-height:40px;border-bottom:1px solid var(--app-divider);font-size:12px;line-height:18px;color:var(--app-muted);background:var(--app-workspace)}
+.business-app .business-list-heading>span:nth-child(4) {text-align:right}
+.business-app .business-list-heading>span:nth-child(5) {text-align:center}
+.business-app .business-list-heading>span:last-child {text-align:right;padding-right:12px}
+.business-app .business-project-row {min-height:72px;margin:0;border:0;border-bottom:1px solid var(--app-divider);border-radius:0;background:var(--app-surface);padding-block:12px;transform:none;box-shadow:none;transition:background .1s ease}
+.business-app .business-project-row:last-child {border-bottom:0}
+.business-app .business-project-row:hover {background:var(--app-workspace);border-color:var(--app-divider);box-shadow:none;transform:none}
+.business-app .business-project-identity {display:flex;align-items:center;gap:12px;min-width:0}
+.business-app .business-project-identity .v2-icon {width:34px;height:38px;border:0;border-radius:8px;background:var(--app-soft);color:var(--app-muted);flex-shrink:0}
+.business-app .business-project-name {min-width:0}
+.business-app .business-project-name h3 {font-size:14px;line-height:22px;font-weight:500;margin:0;color:var(--app-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.business-app .business-project-name p {font-size:12px;line-height:18px;margin:3px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--app-muted)}
+.business-app .business-project-materials {margin:0;gap:2px;font-size:13px;line-height:20px;flex-direction:column;align-items:flex-start}
+.business-app .business-project-materials .v2-badge {padding:0;background:transparent;font-size:13px;line-height:20px;color:var(--app-muted)}
+.business-app .business-project-materials .v2-badge+ .v2-badge {font-size:12px;color:var(--app-tertiary)}
+.business-app .business-project-status {justify-self:start;font-size:12px;line-height:18px;padding:2px 8px;border-radius:6px}
+.business-app .business-project-pending {font-size:13px;line-height:20px;text-align:right;color:var(--app-text);padding-right:8px}
+.business-app .business-project-updated {font-size:12px;line-height:20px;color:var(--app-muted);text-align:center;white-space:nowrap}
+.business-app .business-project-actions {display:flex;justify-content:flex-end;align-items:center;gap:8px;flex-wrap:nowrap}
+.business-app .business-project-actions .btn {min-height:28px;padding:4px 6px;font-size:12px;line-height:20px;border:0;border-radius:6px;background:transparent;color:var(--app-text);white-space:nowrap}
+.business-app .business-project-actions .btn:hover {background:var(--app-soft)}
+.business-app .business-project-actions .business-destructive {color:var(--app-muted)}
+.business-app .business-project-actions .business-destructive:hover {color:var(--app-danger);background:var(--app-danger-bg)}
+.business-app .business-project-page>.v2-note {background:transparent;border:0;border-radius:0;padding:0;margin:16px 0 0;font-size:12px;line-height:20px;color:var(--app-muted)}
+.business-app .business-project-list>.v2-card:not(.business-project-row) {border:0;background:transparent;padding:32px;text-align:center}
+@container workbench (max-width:1150px) {
+  .business-app :is(.business-list-heading,.business-project-row) {grid-template-columns:minmax(190px,1fr) 90px 90px 80px 100px 120px;gap:12px;padding-inline:16px}
+  .business-app .business-project-page {padding:20px 24px}
+}
+@container workbench (max-width:1100px) {
+  .business-app .template-workspace {grid-template-columns:minmax(0,1fr) 360px}
+  .business-app .template-workspace .v2-rule-layout {grid-template-columns:minmax(0,1fr)}
+  .business-app .template-workspace .v2-templates {display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@container workbench (max-width:760px) {
+  /* Give the conversation the available width on small containers; closing restores the same page. */
+  .business-app .template-workspace {grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+  .business-app .template-workspace>.v2-page {display:none}
+  .business-app .template-workspace>.template-ai-panel {grid-column:1;grid-row:1;width:100%;border-left:0}
+}
+@container workbench (max-width:900px) {
+  .business-app .business-header {gap:20px}
+  .business-app .business-name {padding-right:20px}
+  .business-app .business-header .rail {gap:8px}
+  .business-app .business-header .rail .nav {padding:0 8px}
+  .business-app .business-header .rail #workbench-settings>span {display:none}
+  .business-app .business-list-heading {display:none}
+  .business-app .business-project-row {grid-template-columns:minmax(180px,1fr) 90px 88px 128px;gap:8px 12px;padding:14px 16px;min-height:88px}
+  .business-app .business-project-identity {grid-column:1;grid-row:1 / 3}
+  .business-app .business-project-status {grid-column:2;grid-row:1}
+  .business-app .business-project-materials {grid-column:2;grid-row:2}
+  .business-app .business-project-pending {grid-column:3;grid-row:1;text-align:left;padding:0}
+  .business-app .business-project-pending::before {content:'待处理 ';color:var(--app-muted);font-size:12px}
+  .business-app .business-project-updated {grid-column:3;grid-row:2;text-align:left}
+  .business-app .business-project-actions {grid-column:4;grid-row:1 / 3}
+}
+@container workbench (max-width:680px) {
+  .business-app .business-header {gap:8px;padding:10px 16px}
+  .business-app .business-name {border:0;padding:0}
+  .business-app .business-header .rail {flex-basis:100%;justify-content:flex-start;gap:4px}
+  .business-app .business-header .rail .nav {font-size:13px;padding:0 8px}
+  .business-app .business-project-page {padding:20px 16px}
+  .business-app .business-project-page .v2-head .v2-actions {gap:12px}
+  .business-app .business-project-page .v2-stats {justify-content:space-between;gap:12px;margin-bottom:16px}
+  .business-app .business-project-page .v2-stat {padding:0;border:0;gap:4px;flex-direction:column}
+  .business-app .business-project-page .v2-stat span {font-size:12px;white-space:normal}
+  .business-app .business-project-page .v2-stat strong {font-size:20px}
+  .business-app .business-project-page .v2-toolbar {padding:12px;gap:12px}
+  .business-app .business-project-page #v2-project-search {max-width:100%;width:100%}
+  .business-app .business-project-row {grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;padding:16px}
+  .business-app .business-project-identity {grid-column:1;grid-row:1}
+  .business-app .business-project-status {grid-column:2;grid-row:1}
+  .business-app .business-project-materials {grid-column:1;grid-row:2;display:flex;flex-direction:row;gap:8px;margin-left:46px}
+  .business-app .business-project-pending {grid-column:2;grid-row:2;text-align:right;font-size:12px;color:var(--app-muted)}
+  .business-app .business-project-updated {grid-column:1;grid-row:3;margin-left:46px;align-self:center}
+  .business-app .business-project-actions {grid-column:2;grid-row:3;gap:8px}
+  .business-app .business-project-name h3 {font-size:14px}
+  .business-app .business-project-actions .btn {padding:2px 4px}
+}
+
+/* Module navigation belongs to the sidebar; task stages lead the working area. */
+.business-app .rail.business-sidebar.workspace-rail {
+  flex:0 0 156px; width:156px; min-width:156px; height:100%; min-height:0;
+  display:flex; flex-direction:column; align-items:stretch; gap:20px;
+  margin:0; padding:0 10px 12px; overflow:hidden;
+  background:var(--app-bg); color:var(--app-muted); border:0; border-right:1px solid var(--app-divider);
+}
+.business-app .rail.business-sidebar .business-sidebar-heading {
+  display:flex; align-items:center; justify-content:flex-start; flex:0 0 56px;
+  min-height:56px; margin:0 -10px; padding:0 14px; border-bottom:1px solid var(--app-divider);
+  color:var(--app-text); font-size:14px; line-height:22px; font-weight:600; white-space:nowrap;
+}
+.business-app .rail.business-sidebar .business-sidebar-short-title {display:none}
+.business-app .rail.business-sidebar :is(.brand,.workspace-brand,.rail-bottom,.workspace-rail-footer,.avatar,.workspace-toggle) {display:none}
+.business-app .rail.business-sidebar.workspace-rail .rail-nav {display:flex;flex-direction:column;align-items:stretch;width:100%;margin:0;gap:6px}
+.business-app .rail.business-sidebar.workspace-rail .nav {
+  display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:10px;
+  width:100%;height:40px;min-height:40px;margin:0;padding:0 10px;
+  border:1px solid transparent;border-radius:8px;background:transparent;box-shadow:none;
+  color:var(--app-muted);font-size:14px;line-height:22px;font-weight:400;letter-spacing:0;text-align:left;
+}
+.business-app .rail.business-sidebar.workspace-rail .nav:hover {background:var(--app-hover);color:var(--app-text)}
+.business-app .rail.business-sidebar.workspace-rail .nav.active {background:var(--app-soft);border-color:var(--app-divider);color:var(--app-text);font-weight:600}
+.business-app .rail.business-sidebar.workspace-rail .nav svg {width:16px;height:16px;color:inherit;stroke:currentColor;stroke-width:1.75;opacity:1;position:static}
+.business-app .rail.business-sidebar.workspace-rail .nav>span {display:block;flex:1;min-width:0;max-width:5em;color:inherit;position:static;text-align:justify;text-align-last:justify;text-justify:inter-character}
+.business-app .rail.business-sidebar.workspace-rail .nav::before,.business-app .rail.business-sidebar.workspace-rail .nav::after {content:none;display:none;opacity:0}
+.business-app .rail.business-sidebar.workspace-rail .nav:focus-visible {outline:2px solid var(--app-business);outline-offset:2px}
+.business-app .rail.business-sidebar #workbench-settings {display:flex;justify-content:flex-start;gap:10px;width:100%;height:36px;min-height:36px;margin: auto 0 0;padding:0 10px;color:var(--app-muted);background:transparent;border:0;border-radius:8px;font-size:13px}
+.business-app .rail.business-sidebar #workbench-settings>span {display:inline}
+.business-app .rail.business-sidebar #workbench-settings:hover {background:var(--app-hover);color:var(--app-text)}
+.business-app .main {container:business-content / inline-size}
+.business-app .main>.v2-stepbar {min-height:56px;justify-content:center!important;background:var(--app-bg);border-bottom-color:var(--app-divider)}
+.business-app .main>.v2-stepbar>.journey-back {position:absolute!important;left:20px!important;margin:0}
+@container workbench (max-width:1100px) {
+  .business-app .rail.business-sidebar.workspace-rail {flex-basis:64px;width:64px;min-width:64px;padding:0 10px 12px;gap:16px}
+  .business-app .rail.business-sidebar .business-sidebar-heading {justify-content:center;margin:0 -10px;padding:0;font-size:12px}
+  .business-app .rail.business-sidebar .business-sidebar-full-title {display:none}
+  .business-app .rail.business-sidebar .business-sidebar-short-title {display:inline}
+  .business-app .rail.business-sidebar.workspace-rail .nav {justify-content:center;padding:0;width:44px;height:40px;gap:0}
+  .business-app .rail.business-sidebar.workspace-rail .nav>span {display:none}
+  .business-app .rail.business-sidebar #workbench-settings {justify-content:center;width:44px;padding:0;gap:0}
+  .business-app .rail.business-sidebar #workbench-settings>span {display:none}
+}
+@container workbench (max-width:800px) {
+  .business-app .main>.v2-stepbar {justify-content:flex-start!important;gap:4px!important;padding-left:44px!important;padding-right:8px!important}
+  .business-app .main>.v2-stepbar>.journey-back {left:8px!important;width:28px;min-width:28px;height:28px;min-height:28px}
+  .business-app .main>.v2-stepbar>button[data-v2="stage"] {padding:4px 8px!important;gap:6px}
+  .business-app .main>.v2-stepbar .step-dot {width:20px;height:20px}
+}
+@container business-content (max-width:1100px) {
+  .business-app .template-workspace {grid-template-columns:minmax(0,1fr) 360px}
+  .business-app .template-workspace .v2-rule-layout {grid-template-columns:minmax(0,1fr)}
+  .business-app .template-workspace .v2-templates {display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@container business-content (max-width:760px) {
+  .business-app .template-workspace {grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+  .business-app .template-workspace>.v2-page {display:none}
+  .business-app .template-workspace>.template-ai-panel {grid-column:1;grid-row:1;width:100%;border-left:0}
+}
+</style>
+</head><body class="business-app">
 <svg style="display:none" aria-hidden="true"><defs>
 <symbol id="i-logo" viewBox="0 0 24 24"><path d="M5 4h8a7 7 0 010 14H5z"/><path d="M9 8h4a3 3 0 010 6H9"/><path d="M5 20h13"/></symbol>
 <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 00-1 1v16a1 1 0 001 1h12a1 1 0 001-1V8z"/><path d="M14 3v5h5M9 12h6M9 16h4"/></symbol>
@@ -2756,10 +3294,14 @@ if(window.ContractReviewDemo){
  const demoBaseShell=shell;
  shell=function(){
   demoBaseShell();
-  if(view==='projects')document.querySelectorAll('#onboarding-demo,[data-demo-open]').forEach(button=>button.remove());
+  if(view==='projects'){
+   document.querySelectorAll('[data-demo-open]').forEach(button=>button.remove());
+   const guide=document.querySelector('#onboarding-demo');if(guide)guide.textContent='查看五步使用引导 →';
+  }
  };
 }
 /* /onboarding-demo-integration:v2 */
+
 
 
 
@@ -2993,6 +3535,7 @@ document.head.append(disclosureStyle);
 
 
 
+
 /* review-flow-integration:v1 */
 function fieldReviewRows(project, contracts=docs(project).filter(c=>c.kind!=='aux')) {
  const ids=new Set(contracts.map(c=>c.id));
@@ -3108,6 +3651,7 @@ const taskStateProgress=reviewProgress;reviewProgress=function(progress){taskSta
 
 
 
+
 /* project-deletion-integration:v1 */
 function deleteReviewProject(id){
  if(liveBusy||manualRevisionPending||savedDraftPreparation){toast('合同正在处理中，请先停止或等待完成');return;}
@@ -3146,7 +3690,151 @@ renderProject=function(){
 
 
 
+
 view='projects';await saveDurably();shell();
 })();
 
-</script></body></html>
+</script><script id="dsh-business-adapter">/* App-owned same-origin theme adapter; this is not a DSH SDK contract. */
+(() => {
+  'use strict';
+  const root = document.body;
+  root.classList.add('business-app');
+  const tokens = new Set([
+    '--dsw-font-family','--dsw-alias-bg-base','--dsw-alias-bg-layer-1','--dsw-alias-bg-layer-2','--dsw-alias-bg-layer-3',
+    '--dsw-alias-label-primary','--dsw-alias-label-secondary','--dsw-alias-label-tertiary',
+    '--dsw-alias-border-l3','--dsw-alias-border-l4','--dsw-alias-button-primary-fill',
+    '--dsw-alias-label-primary-foreground','--dsw-alias-state-business-primary','--dsw-alias-link',
+    '--dsw-alias-interactive-bg-hover','--dsw-alias-interactive-bg-active','--dsw-radius-xs','--dsw-radius-sm','--dsw-radius-md',
+    '--dsw-radius-lg','--dsw-radius-xl','--dsw-radius-panel'
+  ]);
+  let hostTheme = false;
+  const media = matchMedia('(prefers-color-scheme: dark)');
+  function fallbackTheme() {
+    if (hostTheme) return;
+    const explicit = root.hasAttribute('data-ds-dark-theme') ? 'dark' : document.documentElement.dataset.theme;
+    root.dataset.appTheme = explicit === 'dark' || (!explicit && media.matches) ? 'dark' : 'light';
+  }
+  fallbackTheme();
+  media.addEventListener('change', fallbackTheme);
+  new MutationObserver(fallbackTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+  new MutationObserver(fallbackTheme).observe(root,{attributes:true,attributeFilter:['data-ds-dark-theme']});
+  window.addEventListener('message', event => {
+    const data = event.data;
+    if (window.parent === window || event.source !== window.parent || event.origin !== location.origin ||
+      data?.type !== 'contract-workbench-theme' || data.version !== 1 ||
+      !['light','dark'].includes(data.theme) || !data.tokens || typeof data.tokens !== 'object' || Array.isArray(data.tokens)) return;
+    hostTheme = true;
+    root.dataset.appTheme = data.theme;
+    for (const name of tokens) {
+      const value = data.tokens[name];
+      const valid = typeof value === 'string' && value.length < 500 && !/[;{}<>]|url\s*\(/i.test(value) &&
+        (name === '--dsw-font-family' || CSS.supports(name.includes('radius') ? 'border-radius' : 'color',value));
+      if (valid) root.style.setProperty(name,value);
+      else root.style.removeProperty(name);
+    }
+  });
+  if (window.parent !== window) window.parent.postMessage({type:'contract-workbench-theme-ready',version:1},location.origin);
+
+  // Move existing local navigation only. Never remount the document/editor on resize or theme changes.
+  let projectGuide=null;
+  function refineProjectList(page) {
+    page.classList.add('business-project-page');
+    const create=page.querySelector('.v2-head [data-v2="new-project"]');
+    if(create&&create.textContent!=='＋ 新建项目')create.textContent='＋ 新建项目';
+    const guide = page.querySelector('#onboarding-demo')||projectGuide;
+    if (guide) {
+      projectGuide=guide;
+      const introduction = page.querySelector('#project-intro');
+      const actions = page.querySelector('.v2-head .v2-actions');
+      if (actions && guide.parentElement !== actions) {
+        guide.textContent='使用引导';actions.prepend(guide);
+        introduction?.remove();
+      }
+    }
+    const grid=page.querySelector('.v2-grid');
+    if (!grid) return;
+    grid.classList.add('business-project-list');
+    if (!grid.querySelector('.business-list-heading') && grid.querySelector('[data-v2="open-project"]')) {
+      const heading=document.createElement('div');heading.className='business-list-heading';heading.setAttribute('aria-hidden','true');
+      for (const text of ['项目名称','材料','状态','待处理意见','最近更新','操作']) {
+        const cell=document.createElement('span');cell.textContent=text;heading.append(cell);
+      }
+      grid.prepend(heading);
+    }
+    for (const card of grid.querySelectorAll(':scope>.v2-card')) {
+      if (card.classList.contains('business-project-row')) continue;
+      const open=card.querySelector('[data-v2="open-project"]');
+      if (!open) continue;
+      const top=card.querySelector(':scope>.v2-row.v2-between');
+      const icon=top?.querySelector('.v2-icon'),status=top?.querySelector('.v2-badge');
+      const name=card.querySelector(':scope>h3'),description=card.querySelector(':scope>p');
+      const materials=card.querySelector(':scope>.v2-gap');
+      const foot=card.querySelector('.v2-card-foot'),meta=foot?.querySelector('.v2-sub');
+      const actions=foot?.querySelector('.v2-actions');
+      if (!name || !materials || !status || !actions) continue;
+      name.title=name.textContent;if(description)description.title=description.textContent;
+      const identity=document.createElement('div');identity.className='business-project-identity';
+      const text=document.createElement('div');text.className='business-project-name';text.append(name);if(description)text.append(description);
+      if(icon)identity.append(icon);identity.append(text);
+      const detail=(meta?.textContent||'').split('·').map(value=>value.trim());
+      const updated=document.createElement('time');updated.className='business-project-updated';updated.textContent=detail.shift()||'—';
+      const pending=document.createElement('span');pending.className='business-project-pending';pending.textContent=detail.join(' · ').replace(/项意见待处理/,'项')||'—';
+      pending.setAttribute('aria-label','待处理意见：'+pending.textContent);updated.setAttribute('aria-label','最近更新：'+updated.textContent);
+      materials.classList.add('business-project-materials');status.classList.add('business-project-status');
+      actions.classList.add('business-project-actions');open.textContent='打开项目';
+      const remove=actions.querySelector('[data-project-delete]');
+      if(remove){remove.textContent='删除';remove.setAttribute('aria-label','删除项目：'+name.textContent);}
+      card.classList.add('business-project-row');
+      card.replaceChildren(identity,materials,status,pending,updated,actions);
+    }
+  }
+  function enhance() {
+    const shell = root.querySelector('.shell'), topbar = shell?.querySelector('.topbar'), rail = shell?.querySelector('.rail');
+    if (!shell || !topbar || !rail) return;
+    rail.classList.add('workspace-rail','business-sidebar');
+    rail.setAttribute('aria-label','合同工作台局部导航');
+    const main = shell.querySelector('.main');
+    let heading = rail.querySelector(':scope > .business-sidebar-heading');
+    if (!heading) {
+      heading=document.createElement('div');heading.className='business-sidebar-heading';
+      const full=document.createElement('span');full.className='business-sidebar-full-title';full.textContent='合同审核工作台';
+      const compact=document.createElement('span');compact.className='business-sidebar-short-title';compact.textContent='合同';compact.setAttribute('aria-hidden','true');
+      heading.append(full,compact);rail.prepend(heading);
+    }
+    if (rail.parentElement !== shell) shell.insertBefore(rail,main);
+    main.querySelector(':scope > .business-header')?.remove();
+    const steps = main.querySelector(':scope > .v2-stepbar');
+    if (steps) {
+      if (steps.nextElementSibling !== topbar) topbar.before(steps);
+      steps.setAttribute('aria-label','合同审核步骤');
+      for(const button of steps.querySelectorAll('[data-v2="stage"]')) {
+        if(button.classList.contains('active'))button.setAttribute('aria-current','step');
+        else button.removeAttribute('aria-current');
+      }
+    }
+    root.dataset.businessView = shell.querySelector('.workspace') ? 'document' : topbar.querySelector('.journey-pickers') ? 'workflow' : 'overview';
+    for (const nav of rail.querySelectorAll('.nav')) {
+      nav.setAttribute('aria-label',nav.textContent.trim());
+      nav.title=nav.textContent.trim();
+      if (nav.classList.contains('active')) nav.setAttribute('aria-current','page');
+      else nav.removeAttribute('aria-current');
+    }
+    const settings = root.querySelector('#workbench-settings');
+    if (settings) {
+      if (settings.parentElement !== rail) rail.append(settings);
+      if (!settings.querySelector('span')) {const text=document.createElement('span');text.textContent='工作台设置';settings.append(text);}
+    }
+    for (const button of root.querySelectorAll('[data-project-delete],#confirm-remove-project,#confirm-remove-demo-project')) button.classList.add('business-destructive');
+    const projects=root.querySelector('#v2-project-search')?.closest('.v2-page');
+    if (projects) refineProjectList(projects);
+  }
+  let queued = false;
+  new MutationObserver(() => {
+    if (queued) return;
+    queued = true;
+    queueMicrotask(() => {queued=false;enhance();});
+  }).observe(document.getElementById('app'),{childList:true,subtree:true});
+  enhance();
+})();
+</script>
+</body></html>

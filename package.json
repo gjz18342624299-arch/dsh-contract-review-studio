@@ -16,6 +16,7 @@
     "dsh",
     "lib",
     "public",
+    "scripts/embed-dsh-theme.cjs",
     "cordis.patch.yml",
     "README.md",
     "THIRD-PARTY-NOTICES.txt",
@@ -44,6 +45,7 @@
     "url": "https://github.com/gjz18342624299-arch/dsh-contract-review-studio.git"
   },
   "scripts": {
+    "build:theme": "node scripts/embed-dsh-theme.cjs",
     "test": "node --test tests/*.test.mjs"
   }
 }
