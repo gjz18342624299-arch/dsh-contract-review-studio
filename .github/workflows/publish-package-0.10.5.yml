@@ -1,0 +1,48 @@
+name: Publish verified v0.10.5 package
+on:
+  push:
+    branches: ['release/package-v0.10.5']
+    paths: ['.github/workflows/publish-package-0.10.5.yml']
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    env:
+      RELEASE_COMMIT: 8e58dbaeab6972f0718514d1de499f6fb1170881
+    steps:
+      - name: Build the package from the reviewed commit
+        run: |
+          git init --quiet .
+          git remote add origin https://github.com/gjz18342624299-arch/dsh-contract-review-studio.git
+          git fetch --quiet --depth=1 origin "$RELEASE_COMMIT"
+          git checkout --quiet --detach FETCH_HEAD
+          test "$(git rev-parse HEAD)" = "$RELEASE_COMMIT"
+          npm test
+          npm pack --ignore-scripts
+          mv dsh-contract-review-studio-0.10.5.tgz dsh-contract-review-studio.tgz
+      - name: Check every packaged file against the verified archive
+        shell: python
+        run: |
+          import hashlib
+          import tarfile
+
+          rows = []
+          with tarfile.open("dsh-contract-review-studio.tgz") as archive:
+              for member in archive.getmembers():
+                  if not member.isfile():
+                      raise ValueError(member.name)
+                  digest = hashlib.sha256(archive.extractfile(member).read()).hexdigest()
+                  rows.append(f"{member.name} {digest}")
+          digest = hashlib.sha256("\n".join(sorted(rows)).encode()).hexdigest()
+          if len(rows) != 55 or digest != "3e986839a4bf229edd8bd91d2712b755319fde0b3bb5614806af4b2cce7bd222":
+              raise ValueError("Packaged content differs from the locally verified archive")
+      - name: Publish the versioned Release with its stable asset name
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v0.10.5 dsh-contract-review-studio.tgz \
+            --repo "$GITHUB_REPOSITORY" --target "$RELEASE_COMMIT" \
+            --title '合同版本审查台 v0.10.5' \
+            --notes '从本页下载 dsh-contract-review-studio.tgz 安装 v0.10.5。此版本将现有工作台打包为 GitHub Release 附件，供 DSH 市场分发和统计下载次数。'
