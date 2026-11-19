@@ -2,7 +2,7 @@
 
 面向 DSH Desktop 的合同版本审查台，侧重合同往返回稿、Word 原件与工作稿对照、历史快照恢复和版本交付。AI 审查、企业模板与 Word 编辑服务于这条流程。
 
-**当前版本：0.10.5 · 安装来源：GitHub 源码 · 许可证：自有代码 MIT；ONLYOFFICE SDK AGPLv3**
+**当前版本：0.10.5 · 安装来源：GitHub Release 安装包或源码 · 许可证：自有代码 MIT；ONLYOFFICE SDK AGPLv3**
 
 公共版本首次打开会显示一个明确标记为虚构的演示项目，**不附带作者原有的项目、合同、审核模板、客户访问凭证或公司内网服务配置**。用户可以先体验修改流程，再从自己的材料和企业规范开始建立审查流程。
 
@@ -145,7 +145,7 @@ ONLYOFFICE 服务可用时，可以在工作台内打开 DOCX，编辑正文、�
 
 ### 安装来源
 
-当前采用 **GitHub 源码分发**。仓库根目录已经包含 `package.json`、服务端入口、客户端构建产物和 `cordis.patch.yml`，市场侧不需要代跑构建。当前版本为 `0.10.5`，未发布 npm 包或 GitHub Release 附件。
+从 [v0.10.5 Release](https://github.com/gjz18342624299-arch/dsh-contract-review-studio/releases/tag/v0.10.5) 下载附件 `dsh-contract-review-studio.tgz`，或从对应标签取得源码。安装包和源码均包含服务端入口、客户端构建产物和 `cordis.patch.yml`，可直接安装。
 
 需要检查或生成本地安装包时，可以运行：
 
